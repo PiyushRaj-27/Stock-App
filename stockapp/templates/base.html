@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <title>{% block title %} {% endblock %}</title>
+
+    {% block extrahead %} {% endblock %}
+</head>
+<body>
+    <!-- our header -->
+    <div class="header">
+        <div class="title">TradeCraft</div>
+
+        <div class="searchbar">
+            <input type="text" placeholder="What are you looking for Today?" class="searchbar-input">
+        </div>
+
+        <div class="login-btn">Login</div>
+    </div>
+    {% block content %} {% endblock %}
+</body>
+</html>
