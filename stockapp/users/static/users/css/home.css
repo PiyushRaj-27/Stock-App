@@ -26,7 +26,7 @@
     flex-direction: column;
     align-items: center;
     width: 70%;
-    color: white;
+    color: var(--bgtext);
 }
 
 .major{
@@ -43,7 +43,7 @@
 .started{
     padding: 10px 20px 10px 20px;
     background-color: var(--button);
-    color: white;
+    color: var(--bgtext);
     border-radius: 8px;
     font-size: 15px;
     margin-top: 20px;

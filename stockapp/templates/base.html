@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load socialaccount %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,8 +22,70 @@
             <input type="text" placeholder="What are you looking for Today?" class="searchbar-input">
         </div>
 
-        <div class="login-btn">Login</div>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'account_logout' %}" >   
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Logout</button> 
+            </form>
+        {% else %}
+            <div class="login-btn" >Login</div>
+        {% endif %}
+
     </div>
+
+    <div class="modalContainer">
+        <div class="modal">
+            <div class="modalHeader">
+                <div class="modalTitle">Login</div>
+            </div>
+            <div class="modalBody">
+                <form action="{% url 'account_login' %}" method="post"> 
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="login" id="email" class="form-control" required placeholder="Username" autocomplete="username"> 
+                        
+                        <input type="password" name="password" id="password" class="form-control" required placeholder="Password" autocomplete="current-password">
+                        <button type="submit" class="submit-btn">Login</button>
+                    </div>
+                </form>
+                <hr width="100%">
+                <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a> </div>
+            </div>
+            <form method="post" action="{% provider_login_url "google" %}" class="google-login">
+                {% csrf_token %}
+                <button type="submit" class="signInWithGoogle">Sign in with Google</button>
+            </form>
+        </div>
+    </div>
+
+    
     {% block content %} {% endblock %}
 </body>
+
+<script>
+
+    function onLoginClick(){
+
+        modal = document.querySelector('.modalContainer');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+    }
+
+    function onContainerClick(event){
+        if(event.target.classList.contains('modalContainer')){
+            modal = document.querySelector('.modalContainer');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+        }
+    }
+
+    document.querySelector('.login-btn').addEventListener('click', onLoginClick);
+    document.querySelector('.modalContainer').addEventListener('click', onContainerClick);
+
+    
+</script>
+{% block extrascript %}
+    {% endblock %}
 </html>

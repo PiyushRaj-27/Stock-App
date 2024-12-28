@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load allauth i18n %}
+{% block title %}
+    {% trans "Signup" %}
+{% endblock title %}
+{% load socialaccount %}
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/account/signup.css' %}">
+{% endblock extrahead %}
+{% block content %}
+
+    <div class="container">
+
+    <div class="signup_card">
+        
+    
+    {% element h1 %}
+        {% trans "Sign Up" %}
+    {% endelement %}
+
+    {% setvar link %}
+        <a href="{{ login_url }}">
+        {% endsetvar %}
+        {% setvar end_link %}
+        </a>
+    {% endsetvar %}
+
+    
+
+    {% if not SOCIALACCOUNT_ONLY %}
+        <div class="form">
+        {% url 'account_signup' as action_url %}
+        {% element form form=form method="post" action=action_url tags="entrance,signup" %}
+            {% slot body %}
+                {% csrf_token %}
+                {% element fields form=form unlabeled=True %}
+                {% endelement %}
+                {{ redirect_field }}
+            {% endslot %}
+            {% slot actions %}
+                {% element button tags="prominent,signup" type="submit" %}
+                    {% trans "Sign Up" %}
+                {% endelement %}
+                
+            {% endslot %}
+        {% endelement %}
+        </div>
+    {% endif %}
+
+    {% if PASSKEY_SIGNUP_ENABLED %}
+        {% element hr %}
+        {% endelement %}
+        {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
+            {% trans "Sign up using a passkey" %}
+        {% endelement %}
+    {% endif %}
+
+    <div class="google">
+    <!-- {% if SOCIALACCOUNT_ENABLED %}
+        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %} -->
+
+            
+            <form method="post" action="{% provider_login_url "google" %}" class="google-login">
+                {% csrf_token %}
+                <button type="submit" class="signInWithGoogle">Sign in with Google</button>
+            </form>
+    </div>
+    <hr width="100%">
+    <div class="signup_message">
+        {% element p %}
+            {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
+        {% endelement %}
+    </div>
+    </div>
+    </div>
+
+{% endblock content %}

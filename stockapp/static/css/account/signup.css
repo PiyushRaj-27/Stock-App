@@ -1,0 +1,157 @@
+*{
+    margin:0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+::-webkit-scrollbar{
+    display: none;
+}
+  
+
+.container{
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 10px 40px 10px;
+    color: var(--bgtext);
+    /* background-color: var(--background); */
+    background-image: url('/static/images/bg3.png');
+    height: auto;
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.signup_card{
+    padding: 20px;
+    display: flex;
+    width: 30%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: -5px -5px 50px salmon, 5px 5px 50px rgb(118, 10, 219);
+}
+h1 {
+    font-size: 40px;
+    padding: 10px;
+}
+.form{
+    width: 100%;
+}
+
+.form > form{
+    margin: 10px 0px 10px 0px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form > form > p{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+}
+
+.form > form > p > input{
+    padding: 10px;
+    background-color: var(--bgshade1);
+    border: none;
+    margin: 10px;
+    width: 70%;
+    border-radius: 5px;
+    color: var(--bgshade1text);
+}
+
+ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    
+}
+form > ul > li{
+    list-style: none;
+    padding: 5px;
+    margin: 5px;
+    width: 80%;
+}
+label{
+    display: none;
+}
+
+form > button{
+    background-color: var(--button);
+	padding: 10px 20px 10px 20px;
+	color: var(--bgtext);
+    border: none;
+	border-radius: 8px;
+	/* transition: 1s ease-in-out; */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    width: 70%;
+    margin: 10px;
+}
+
+.google{
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.google > hr{
+    display: none;
+}
+
+.google > ul > li{
+    width: 70%;
+    list-style: none;
+    background-color: var(--google);
+    padding: 5px 10px 5px 10px;
+    margin-top: 15px;
+    color: var(--bgtext);
+    font-size: 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+form > button:hover{
+    background-color: var(--buttonPressed);
+}
+
+.google > ul > li > a{
+    text-decoration: none;
+    color: var(--bgtext);
+
+}
+.signup_message{
+    padding: 20px 0px 10px 0px;
+    color: var(--bgshade1text);
+}
+
+.errorlist{
+    background-color: var(--alert);
+    /* padding: 10px; */
+}
+.google-login{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.google-login > button{
+    background-color: var(--google);
+}
+
+.google-login > button:hover{
+    background-color: var(--google);
+}
+.signInWithGoogle{
+    width: 70%;
+}
