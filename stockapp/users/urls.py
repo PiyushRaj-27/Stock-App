@@ -1,5 +1,6 @@
-from django.contrib import admin
-from django.urls import path, include
+""" Urls for user app"""
+
+from django.urls import path
 from .views import home, signup
 urlpatterns = [
     path('', home, name='home'),
