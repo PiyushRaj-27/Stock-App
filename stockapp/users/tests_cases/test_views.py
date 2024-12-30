@@ -64,3 +64,20 @@ class TestLoginView(TestCase):
         response = self.client.get(self.login_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base.html')
+
+class TestSignupView(TestCase):
+    
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword2203@')
+        self.signup_url = reverse('account_signup')
+        self.home_url = reverse('home')
+        return super().setUp()
+
+    def test_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('account_signup'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_view_redirect_if_logged_in(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.signup_url)
+        self.assertRedirects(response, self.home_url)
