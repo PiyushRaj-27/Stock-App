@@ -16,10 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from .views import dashboard, search
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('users.urls')),
-    path('accounts/', include('allauth.urls')),
-    path('app/', include('app.urls'))
+
+    path('dashboard/', dashboard, name="dashboard"),
+    path('search/', search, name="search")
 ]

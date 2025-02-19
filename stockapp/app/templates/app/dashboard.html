@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extrahead %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class ="content">
+        
+        <div class="search_stock">
+            <div class="major">
+                Search Stock!
+            </div>
+            <div class="search_form_container">
+                <form method="post" action="{% url 'search' %}" class="search_form">
+                    {% csrf_token %}
+                    <input type="text" name="stock" id="stock" placeholder="Search Stock" class="search_bar" required>
+                    <input type="submit" hidden />
+                </form>
+            </div>
+        </div>
+    
+    </div>
+
+    <script>
+        window.addEventListener("bu")
+    </script>
+{% endblock %}
