@@ -36,6 +36,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # 'django.contrib.sites',
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -176,3 +178,16 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'your-email@gmail.com'  # Replace with your email address
 # EMAIL_HOST_PASSWORD = 'your-password'  # Replace with your email password
+
+
+#channels
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+
+# daphne
+ASGI_APPLICATION = "stockapp.asgi.application"

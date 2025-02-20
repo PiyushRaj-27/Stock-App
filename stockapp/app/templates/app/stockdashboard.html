@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extrahead %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/stockdashboard.css' %}">
+{% endblock %}
+
+
+
+{% block content %}
+    <div class ="content">
+        
+        <div>Coming soon! please check the websocket connection! {{ stock_name| json_script:"stock_name" }} </div>
+        
+        <div class="socket-data" id="socket-data">Data</div>
+    </div>
+
+
+    <script>
+        const stockName = JSON.parse(document.getElementById('stock_name').textContent);
+        
+        const Socket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/stock/'
+            + stockName
+            + '/'
+        );
+
+        Socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.getElementById("socket-data").innerText = data.message
+        };
+    </script>
+{% endblock %}
