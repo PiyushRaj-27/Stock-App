@@ -32,6 +32,7 @@
 
         Socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            console.log(data)
             document.getElementById("socket-data").innerText = data.message
         };
     </script>
