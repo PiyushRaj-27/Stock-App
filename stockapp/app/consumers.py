@@ -2,9 +2,9 @@ import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+import yfinance as yf
 
-
-
+global_consumers = {}
 
 
 class StockConsumer(AsyncWebsocketConsumer):
@@ -33,8 +33,12 @@ class StockConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
+
+        global_consumers[self.group_name] = global_consumers.get(self.group_name,0) + 1
         # Start sending updates
-        asyncio.create_task(self.send_updates())
+
+        if global_consumers[self.group_name] == 1:
+            asyncio.create_task(self.send_updates())
 
 
 
@@ -49,6 +53,9 @@ class StockConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+        global_consumers[self.group_name] -= 1
+        
+
 
     async def send_updates(self):
         """
@@ -56,10 +63,14 @@ class StockConsumer(AsyncWebsocketConsumer):
         Handles exceptions during update sending.
         """
         channel_layer = get_channel_layer()
-        update = 1
+
         while True:
             try:
-                # data = await api(self.stock_name) #Uncomment and replace with actual API call
+
+                if global_consumers[self.group_name] == 0:
+                    break
+
+                update = await self.fetch_update()
                 # Send message to WebSocket group
                 await channel_layer.group_send(
                     self.group_name,
@@ -68,13 +79,13 @@ class StockConsumer(AsyncWebsocketConsumer):
                         "message": update
                     }
                 )
-                update += 1
-                await asyncio.sleep(5) #adjust update interval as needed
+                
+                await asyncio.sleep(30) #adjust update interval as needed
 
 
             except Exception as e:
                 print(f"Error sending updates: {e}")
-                break #Exit the loop if there's an error
+                break 
 
 
     async def stock_update(self, event):
@@ -90,3 +101,24 @@ class StockConsumer(AsyncWebsocketConsumer):
         """
         Retrives the data from api and pass it to the front end users.
         """
+
+        try:
+            ticker = yf.Ticker(self.stock_name)
+            data = ticker.history(period = "1d", interval = "1m")
+            if not data.empty:
+                last_price = data['Close'][-1]
+                update_data = {
+                    "stock": self.stock_name,
+                    "last_price": last_price,
+                    "timestamp": data.index[-1].isoformat()
+                }
+
+                return update_data
+
+            return {}
+        
+        except Exception as e:
+
+            print(f"Error fetching data for {self.stock_name} error: {e}")
+            return {}
+        
