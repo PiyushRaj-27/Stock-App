@@ -53,7 +53,7 @@ class TestLoginView(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword2203@')
         self.login_url = reverse('account_login')
         self.home_url = reverse('home')
-
+        self.app_url = reverse('dashboard')
     def test_url_exists_at_desired_location(self):
         """Test if the login page exists at the desired location"""
 
@@ -61,11 +61,11 @@ class TestLoginView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_redirect_if_logged_in(self):
-        """Test if the login page redirects to home page if user is logged in"""
+        """Test if the login page redirects to dashboard if user is logged in"""
 
         self.client.force_login(self.user)
-        response = self.client.get(self.login_url)
-        self.assertRedirects(response, self.home_url)
+        response = self.client.get(self.login_url, follow=True)
+        self.assertRedirects(response, self.app_url)
 
     def test_template_used(self):
         """Test if the correct template is used for the login page"""
@@ -85,6 +85,8 @@ class TestSignupView(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword2203@')
         self.signup_url = reverse('account_signup')
         self.home_url = reverse('home')
+        self.app_url = reverse('dashboard')
+        # print(f"App url : {self.app_url}")
         return super().setUp()
 
     def test_url_exists_at_desired_location(self):
@@ -94,9 +96,9 @@ class TestSignupView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_redirect_if_logged_in(self):
-        """Test if the signup page redirects to home page if user is logged in"""
+        """Test if the signup page redirects to dashboard if user is logged in"""
 
         self.client.force_login(self.user)
-        response = self.client.get(self.signup_url)
-        self.assertRedirects(response, self.home_url)
+        response = self.client.get(self.signup_url, follow=True)
+        self.assertRedirects(response, self.app_url)
     
