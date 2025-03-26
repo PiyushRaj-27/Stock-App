@@ -4,7 +4,7 @@ Code for app endpoint
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+from .utilities import get_stock_1hr
 
 # Create your views here.
 @login_required(login_url="/accounts/login")
@@ -18,7 +18,22 @@ def dashboard(request):
     Returns:
         The rendered dashboard template.
     """
-    return render(request, "app/dashboard.html")
+    labels_list = []
+    data_list = []
+    names = []
+    for stock in ("GOOGL", "MSFT", "TSLA", "NVDA"):
+        try:
+            temp = get_stock_1hr(stock)
+            labels = temp.index.strftime('%H').tolist()
+            data = temp["Close"].tolist()
+            labels_list.append(labels[-7:])
+            data_list.append(data[-7:])
+            names.append(stock)
+        except:
+            continue
+    data = list(map(list, list(zip(labels_list, data_list, names))))
+
+    return render(request, "app/dashboard.html",{"data":data})
 
 
 
@@ -39,7 +54,6 @@ def search(request):
         or a redirect to the main dashboard.
     """
     if request.method == "POST":
-        print(f"Post request: {request.POST['stock']}")
         return render(request, "app/stockdashboard.html", {'stock_name': request.POST["stock"]})
 
     return redirect("/app/dashboard")
