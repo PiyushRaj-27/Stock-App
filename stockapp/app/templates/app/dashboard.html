@@ -3,202 +3,202 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block extrahead %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'app/css/dashboard.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    {% endblock %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block content %}
-    <div class ="content">
-        
-        <div class="search_stock">
-            <div class="major">
-                Search Stock!
-            </div>
-            <div class="search_form_container">
-                <form method="post" action="{% url 'search' %}" class="search_form">
-                    {% csrf_token %}
-                    <input type="text" name="stock" id="stock" placeholder="Search Stock" class="search_bar" required>
-                    <input type="submit" hidden />
-                </form>
-            </div>
+<div class="content">
+
+    <div class="search_stock">
+        <div class="major">
+            Search Stock!
         </div>
-
-        <div class="top-stocks">
-            <div class="category">
-                <div class="categoryTitle">
-                    Top Picks
-                </div>
-                <div class="stocks">
-                    <!-- <div class="stockcard" id="stock-google">
-                        <div class="stockcardtitle">Googl</div>
-                        <div class="stocknumerics">
-                            <div class="numerics">
-                                Profit: 100%
-                            </div>
-                            <div class="numerics">
-                                Loss: 92% 
-                            </div>
-                        </div>
-                        <div class="stockcarddata">
-                            <canvas id="Chart"></canvas>
-                        </div>
-                    </div>
-                    <div class="stockcard" id="stock-google">
-                        <div class="stockcardtitle">Googl</div>
-                        <div class="stocknumerics">
-                            <div class="numerics">
-                                Profit: 100%
-                            </div>
-                            <div class="numerics">
-                                Loss: 92% 
-                            </div>
-                        </div>
-                        <div class="stockcarddata">
-                            <canvas id="Chart"></canvas>
-                        </div>
-                    </div>
-                    <div class="stockcard" id="stock-google">
-                        <div class="stockcardtitle">Googl</div>
-                        <div class="stocknumerics">
-                            <div class="numerics">
-                                Profit: 100%
-                            </div>
-                            <div class="numerics">
-                                Loss: 92% 
-                            </div>
-                        </div>
-                        <div class="stockcarddata">
-                            <canvas id="Chart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="stockcard" id="stock-google">
-                        <div class="stockcardtitle">Googl</div>
-                        <div class="stocknumerics">
-                            <div class="numerics">
-                                Profit: 100%
-                            </div>
-                            <div class="numerics">
-                                Loss: 92% 
-                            </div>
-                        </div>
-                        <div class="stockcarddata">
-                            <canvas id="Chart"></canvas>
-                        </div>
-                    </div> -->
-
-                    {% for labels, data, name in data %}
-            <div class="stockcard" id="stock-{{ name }}">
-                <div class="stockcardtitle">{{ name }}</div>
-                <div class="stocknumerics">
-                    <div class="numerics" id="price-{{name}}">
-                        Profit: 100%
-                    </div>
-                </div>
-                <div class="stockcarddata">
-                    <canvas id="chart-{{ name }}"></canvas>
-                </div>
-            </div>
-            {% endfor %}
-                </div>
-            </div>
+        <div class="search_form_container">
+            <form method="post" action="{% url 'search' %}" class="search_form">
+                {% csrf_token %}
+                <input type="text" name="stock" id="stock" placeholder="Search Stock" class="search_bar" required>
+                <input type="submit" hidden />
+            </form>
         </div>
-
-        <div class="interesting">
-
-            <div class="sectionheader">interesting Facts</div>
-            <div class="info">
-                <div class="infotext">
-                    <div>
-                        The Monday Effect suggests that stock returns on Mondays tend to be lower compared to other days of the week. This phenomenon has been observed across various stock indices, with historical data showing slightly negative or lower-than-average returns at the start of the week.
-                    </div>
-                </div>
-                <div class="infochart" id="fact1">
-                    <canvas id="mondayEffectChart"></canvas>
-                </div>
-            </div>
-        </div>
-    
     </div>
 
+    <div class="top-stocks">
+        <div class="category">
+            <div class="categoryTitle">
+                Top Picks
+            </div>
+            <div class="stocks">
+                {% for labels, data, name in data %}
+                <div class="stockcard" id="stock-{{ name }}">
+                    <div class="stockcardtitle">{{ name }}</div>
+                    <div class="stocknumerics">
+                        <div class="numerics" id="price-{{name}}">
+                            Profit: 100%
+                        </div>
+                    </div>
+                    <div class="stockcarddata">
+                        <canvas id="chart-{{ name }}"></canvas>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-    <script>
+    <div class="container">
+        <div class="container-title">National Stock Exchange</div>
+        <div class="nse-container" id="nseCont">
+        </div>
+    </div>
+    
 
-        const stockData = {{ data|safe }};
+    <div class="interesting">
 
-stockData.forEach((stock, index) => {
-    const labels = stock[0];
-    const data = stock[1];
-    const name = stock[2];
-    const canvasId = "chart-" + name;
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    const priceText = document.getElementById("price-"+name)
-    priceText.innerText = `${Math.round((data[data.length - 1] * 100)/100)} USD`;
+        <div class="sectionheader">Interesting Facts</div>
+        <div class="info">
+            <div class="infotext">
+                <div>
+                    The Monday Effect suggests that stock returns on Mondays tend to be lower compared to other days of
+                    the week. This phenomenon has been observed across various stock indices, with historical data
+                    showing slightly negative or lower-than-average returns at the start of the week.
+                </div>
+            </div>
+            <div class="infochart" id="fact1">
+                <canvas id="mondayEffectChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-    let gradient = ctx.createLinearGradient(0, 0, 0, 300); // Adjust height as needed
-    gradient.addColorStop(0, "#190b22");
-    gradient.addColorStop(1, "#120c16");
+</div>
+
+
+<script>
+
+    const stockData = {{ data| safe }};
+
+    stockData.forEach((stock, index) => {
+        const labels = stock[0];
+        const data = stock[1];
+        const name = stock[2];
+        const canvasId = "chart-" + name;
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        const priceText = document.getElementById("price-" + name)
+        priceText.innerText = `${Math.round((data[data.length - 1] * 100) / 100)} USD`;
+
+        let gradient = ctx.createLinearGradient(0, 0, 0, 300); // Adjust height as needed
+        gradient.addColorStop(0, "#190b22");
+        gradient.addColorStop(1, "#120c16");
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: name + " Price",
+                    data: data,
+                    borderColor: "#6a1ed3",
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Important for dynamic sizing
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { ticks: { color: "white" } },
+                    y: { ticks: { color: "white" } }
+                }
+            }
+        });
+    });
+
+
+    const ctx = document.getElementById('mondayEffectChart').getContext('2d');
+
     new Chart(ctx, {
-        type: "line",
+        type: 'bar',
         data: {
-            labels: labels,
+            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
             datasets: [{
-                label: name + " Price",
-                data: data,
-                borderColor: "#6a1ed3",
-                backgroundColor: gradient,
-                fill: true,
-                tension: 0.4
+                label: 'Avg. Stock Returns (%)',
+                data: [-0.3, 0.5, 0.4, 0.6, 0.7],  // Dummy data
+                backgroundColor: '#6a1ed3',  // White bars with slight transparency
+                borderColor: '#7c25f5',  // White border
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // Important for dynamic sizing
+            maintainAspectRatio: false,
             plugins: {
                 legend: { display: false }
             },
             scales: {
-                x: { ticks: { color: "white" } },
-                y: { ticks: { color: "white" } }
+                x: {
+                    ticks: { color: 'white' }, // White labels
+
+                },
+                y: {
+                    ticks: { color: 'white' },
+
+                }
             }
         }
     });
-});
 
-
-const ctx = document.getElementById('mondayEffectChart').getContext('2d');
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        datasets: [{
-            label: 'Avg. Stock Returns (%)',
-            data: [-0.3, 0.5, 0.4, 0.6, 0.7],  // Dummy data
-            backgroundColor: '#6a1ed3',  // White bars with slight transparency
-            borderColor: '#7c25f5',  // White border
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
-        },
-        scales: {
-            x: {
-                ticks: { color: 'white' }, // White labels
-                
-            },
-            y: {
-                ticks: { color: 'white' },
-    
-            }
-        }
+    async function get_top_stocks_task_id() {
+        const response = await fetch(`/app/top_stock`);
+        const result = await response.json();
+        return result.task_id;
     }
-});
-    </script>
-    </script>
+
+    function pollResult(taskId, callback) {
+        let call_count = 0;
+        const interval = setInterval(async () => {
+            call_count += 1;
+            if (call_count > 5){
+                console.log("Cannot connect to server");
+                clearInterval(interval);
+            }
+            const response = await fetch(`/app/infer?task_id=${taskId}`);
+            const data = await response.json();
+
+            if (data.status === 'SUCCESS') {
+            clearInterval(interval);
+            callback(data.result);
+            }
+        }, 2000); // poll every 1 second
+    }
+
+
+    async function get_top_stock_data(){
+        const task_id = await get_top_stocks_task_id();
+        const mapping = {"^NSEI": "Nifty50", "^BSESN": "Sensex", "RELIANCE.NS": "Reliance", "TCS.NS": "TCS", "TATAMOTORS.NS": "Tata", "ITC.NS": "ITC", "NTPC.NS": "NTPC"}
+        pollResult(task_id, (response)=>{
+            const nseCont = document.getElementById("nseCont");
+            for (const key in response) {
+                const nseCard = document.createElement("div");
+                const nseName = document.createElement("div");
+                const nseMarket = document.createElement("div");
+                nseName.innerText = mapping[key];
+                nseMarket.innerText = `Rs. ${Math.round(parseInt(response[key])).toString()}`;
+                nseName.classList.add("nse-name");
+                nseMarket.classList.add('nse-market');
+                nseCard.classList.add("nse-card");
+                nseCard.appendChild(nseName);
+                nseCard.appendChild(nseMarket);
+                nseCont.appendChild(nseCard);
+            }
+        })
+    }
+
+    get_top_stock_data();
+    
+</script>
+</script>
 {% endblock %}

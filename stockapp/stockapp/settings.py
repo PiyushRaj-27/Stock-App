@@ -191,3 +191,30 @@ CHANNEL_LAYERS = {
 
 # daphne
 ASGI_APPLICATION = "stockapp.asgi.application"
+
+
+
+# Redis cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    },
+    'redis': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Replace with your Redis server info
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Use the Redis cache as the default cache
+CACHES['default'] = CACHES['redis']
+
+
+
+# Redis borker:
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

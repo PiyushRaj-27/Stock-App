@@ -23,7 +23,6 @@ class StockConsumer(AsyncWebsocketConsumer):
         Handles WebSocket connection. Joins the appropriate Channels group for the stock.
         """
         self.stock_name = self.scope["url_route"]["kwargs"]["stock_name"]
-        print(f"Client connected for {self.stock_name}")
 
         # Join stock group
         self.group_name = f"stock_{self.stock_name}"
@@ -34,6 +33,7 @@ class StockConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        # we can use redis to store the global count.
         global_consumers[self.group_name] = global_consumers.get(self.group_name,0) + 1
         # Start sending updates
 
@@ -122,3 +122,6 @@ class StockConsumer(AsyncWebsocketConsumer):
             print(f"Error fetching data for {self.stock_name} error: {e}")
             return {}
         
+
+class TopConsumer(AsyncWebsocketConsumer):
+    pass

@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import dashboard, search
+from .views import dashboard, search, stock_dashboard, get_result, top_india_stock
 urlpatterns = [
 
     path('dashboard/', dashboard, name="dashboard"),
-    path('search/', search, name="search")
+    path('search/', search, name="search"),
+    path('top_stock/', top_india_stock, name="top_stock"),
+    path('infer/', get_result, name = "infer"),
 ]

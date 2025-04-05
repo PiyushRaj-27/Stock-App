@@ -4,7 +4,10 @@ Code for app endpoint
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .utilities import get_stock_1hr
+from .utilities import get_stock_1hr, get_top_stock_india
+from celery.result import AsyncResult
+from django.http import JsonResponse
+
 
 # Create your views here.
 @login_required(login_url="/accounts/login")
@@ -32,7 +35,7 @@ def dashboard(request):
         except:
             continue
     data = list(map(list, list(zip(labels_list, data_list, names))))
-
+   
     return render(request, "app/dashboard.html",{"data":data})
 
 
@@ -57,3 +60,21 @@ def search(request):
         return render(request, "app/stockdashboard.html", {'stock_name': request.POST["stock"]})
 
     return redirect("/app/dashboard")
+
+
+@login_required(login_url="/accounts/login")
+def stock_dashboard(request, stockname: str):
+    print(f"Request for stock: {stockname}")
+    return dashboard(request)
+
+@login_required(login_url="/accounts/login")
+def top_india_stock(request):
+    top_india_data_task = get_top_stock_india.delay()
+    return JsonResponse({"task_id": top_india_data_task.id})
+
+@login_required(login_url="/accounts/login")
+def get_result(request):
+    task_id = request.GET.get('task_id')
+    result = AsyncResult(task_id)
+
+    return JsonResponse({'status': result.status, 'result': result.result})
