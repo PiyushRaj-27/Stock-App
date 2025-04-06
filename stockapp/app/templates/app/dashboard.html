@@ -157,8 +157,17 @@
         return result.task_id;
     }
 
-    function pollResult(taskId, callback) {
+    async function pollResult(taskId, callback) {
         let call_count = 0;
+
+        const response = await fetch(`/app/infer?task_id=${taskId}`);
+        const data = await response.json();
+
+        if (data.status === 'SUCCESS') {
+            callback(data.result);
+            return;
+        }
+
         const interval = setInterval(async () => {
             call_count += 1;
             if (call_count > 5){
@@ -179,10 +188,12 @@
     async function get_top_stock_data(){
         const task_id = await get_top_stocks_task_id();
         const mapping = {"^NSEI": "Nifty50", "^BSESN": "Sensex", "RELIANCE.NS": "Reliance", "TCS.NS": "TCS", "TATAMOTORS.NS": "Tata", "ITC.NS": "ITC", "NTPC.NS": "NTPC"}
-        pollResult(task_id, (response)=>{
+        await pollResult(task_id, (response)=>{
             const nseCont = document.getElementById("nseCont");
             for (const key in response) {
                 const nseCard = document.createElement("div");
+                const link = document.createElement("a");
+                link.href = `/app/stock/${key}`;
                 const nseName = document.createElement("div");
                 const nseMarket = document.createElement("div");
                 nseName.innerText = mapping[key];
@@ -190,7 +201,8 @@
                 nseName.classList.add("nse-name");
                 nseMarket.classList.add('nse-market');
                 nseCard.classList.add("nse-card");
-                nseCard.appendChild(nseName);
+                link.appendChild(nseName);
+                nseCard.appendChild(link);
                 nseCard.appendChild(nseMarket);
                 nseCont.appendChild(nseCard);
             }

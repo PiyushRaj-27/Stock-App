@@ -1,39 +1,367 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block extrahead %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'app/css/stockdashboard.css' %}">
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/stockdashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
 {% endblock %}
 
 
 
 {% block content %}
-    <div class ="content">
-        
-        <div>Coming soon! please check the websocket connection! {{ stock_name| json_script:"stock_name" }} </div>
-        
-        <div class="socket-data" id="socket-data">Data</div>
+<div class="content">
+
+    <div>{{ stock_name| json_script:"stock_name" }} </div>
+
+
+    <div class="stockapp">
+        <div class="stockcard" id="stock-{{ stock_name }}">
+            <div class="stockdetails">
+                <div class="stockcardtitle">{{ stock_name }}</div>
+
+                <div>
+                    Line &ThickSpace;
+                    <label class="switch">
+                        <input type="checkbox" id="toggleSwitch">
+                        <span class="slider round"></span>
+                    </label>
+                &ThickSpace; Candles
+                </div>
+            </div>
+            <hr class="hrrule">
+            <div class="stocknumerics">
+                <div class="numerics">
+                    <div class="numeric" id="price-{{stock_name}}-close">
+                        <!-- 22,904.45 <div class="high-price">-345.65</div> -->
+                    </div>
+                    <div class="numeric-dull">At Close</div>
+                </div>
+
+            </div>
+            <hr class="hrrule">
+            <div class="stockcarddata">
+                <canvas id="chart-{{ stock_name }}"></canvas>
+            </div>
+            
+        </div>
+
+        <div class="datacard" id="datacard">
+            
+        </div>
     </div>
 
+    <div class="socket-data" id="socket-data">Data</div>
+</div>
 
-    <script>
-        const stockName = JSON.parse(document.getElementById('stock_name').textContent);
+
+<script>
+    const stockName = JSON.parse(document.getElementById('stock_name').textContent);
+    let stockData;
+    let chart = null;
+    const Socket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        + stockName
+        + '/'
+    );
+
+    Socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log(data)
+        document.getElementById("socket-data").innerText = `${data.stock} ${data.last_price}`
+    };
+
+    async function get_hourly_stocks_task_id() {
+        const response = await fetch(`/app/stock/hourly/${stockName}`);
+        const result = await response.json();
+        return result.task_id;
+    }
+
+    async function pollResult(taskId, callback) {
+        let call_count = 0;
+
+        const response = await fetch(`/app/infer?task_id=${taskId}`);
+        const data = await response.json();
+
+        if (data.status === 'SUCCESS') {
+            callback(data.result);
+            return;
+        }
+
+        const interval = setInterval(async () => {
+            call_count += 1;
+            if (call_count > 5) {
+                console.log("Cannot connect to server");
+                clearInterval(interval);
+            }
+            const response = await fetch(`/app/infer?task_id=${taskId}`);
+            const data = await response.json();
+
+            if (data.status === 'SUCCESS') {
+                clearInterval(interval);
+                callback(data.result);
+            }
+        }, 2000); // poll every 1 second
+    }
+
+
+    async function get_hourly_stock_data() {
+        const task_id = await get_hourly_stocks_task_id();
+
+        await pollResult(task_id, (response) => {
+            // console.log(response);
+            stockData = response;
+            appendPrices(stockData);
+            renderStockGraph(response, stockName);
+        })
+    }
+
+    get_hourly_stock_data();
+
+    function appendPrices(data) {
+        data = JSON.parse(data);
+        const Close = data.Close;
+        const CloseKey = Object.keys(Close);
+        const lastCloseKey = CloseKey[CloseKey.length - 1];
+        const lastClose = Close[lastCloseKey];
+
+        const Open = data.Open
+        const OpenKey = Object.keys(Open);
+        const firstOpenKey = OpenKey[0];
+        const firstOpen = Open[firstOpenKey];
+
+        const diff = parseFloat(lastClose) - parseFloat(firstOpen);
+
+        const closeNumeric = document.getElementById(`price-${stockName}-close`);
+        const diffIndicator = document.createElement("div");
+        diffIndicator.classList.add(diff < 0 ? "low-price" : "high-price");
+        diffIndicator.innerText = (diff).toFixed(2);
+        closeNumeric.innerText = (lastClose).toFixed(2);
+        closeNumeric.appendChild(diffIndicator);
+
+
+        console.log(data);
+
+        const Low = data.Low;
+        const High = data.High;
+
+        const lowest = Math.min(...Object.values(Low));
+        const highest = Math.max(...Object.values(High));
+
+        const datas = {"Open": firstOpen, "High": highest, "Low": lowest, "Volume": 0};
+        const datacard = document.getElementById("datacard");
+        for (const key in datas) {
+            const dataDiv = document.createElement("div");
+            dataDiv.classList.add("data");
+
+            const dataKey = document.createElement("div");
+            dataKey.classList.add("data-key");
+
+            const dataValue = document.createElement("div");
+            dataValue.classList.add("data-value");
+
+            dataKey.innerText = key;
+            dataValue.innerText = (datas[key]).toFixed(2);
+
+            dataDiv.appendChild(dataKey);
+            dataDiv.appendChild(dataValue);
+            datacard.appendChild(dataDiv);
+        }
+    }
+
+    function renderStockGraph(stockData, stockName){
+        let data =  JSON.parse(stockData);
+        if(chart){
+            chart.destroy();
+        }
         
-        const Socket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/stock/'
-            + stockName
-            + '/'
-        );
 
-        Socket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            console.log(data)
-            document.getElementById("socket-data").innerText = data.message
-        };
-    </script>
+        const timestamps = Object.keys(data["Close"]);
+        const closePrices = Object.values(data["Close"]);
+        const canvasId = `chart-${stockName}`;
+        const priceElementId = `price-${stockName}`;
+        const labels = timestamps.map(ts => new Date(parseInt(ts)));
+
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        // const priceText = document.getElementById(priceElementId);
+        // priceText.innerText = `RS. ${Math.round((closePrices[closePrices.length - 1] * 100) / 100)}`;
+
+        let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, "#190b22");
+        gradient.addColorStop(1, "#120c16");
+
+        chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "", // hide the label
+                    data: closePrices,
+                    borderColor: "#6a1ed3",
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "#222",
+                        titleColor: "#fff",
+                        bodyColor: "#ddd",
+                        borderColor: "#6a1ed3",
+                        borderWidth: 1,
+                    }
+                },
+                scales: {
+                    x: {
+                        type: "time",
+                        time: {
+                            unit: "hour"
+                        },
+                        ticks: { color: "white" },
+                        // grid: { color: "rgba(255,255,255,0.05)" }
+                    },
+                    y: {
+                        ticks: { color: "white" },
+                        // grid: { color: "rgba(255,255,255,0.05)" }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderStockChart(stockData, stockName) {
+
+        const parsedData = JSON.parse(stockData);
+        if(chart){
+            chart.destroy()
+        }        
+
+        const canvasId = `chart-${stockName}`;
+        const priceElementId = `price-${stockName}`;
+        const timestamps = Object.keys(parsedData["Close"]);
+        const ctx = document.getElementById(canvasId).getContext("2d");
+
+        const candleData = timestamps.map(ts => {
+            const open = parsedData["Open"][ts];
+            const close = parsedData["Close"][ts];
+            const isBullish = close >= open;
+
+            return {
+                x: parseInt(ts),
+                o: open,
+                h: parsedData["High"][ts],
+                l: parsedData["Low"][ts],
+                c: close,
+                backgroundColor: isBullish ? getGreenGradient(ctx) : getRedGradient(ctx),
+                borderColor: isBullish ? "#1dff4a" : "#ff2222"
+            };
+        });
+
+
+        chart = new Chart(ctx, {
+            type: "candlestick",
+            data: {
+                datasets: [{
+                    label: stockName + " Stock",
+                    data: candleData,
+                    borderColor: ctx => ctx.raw.borderColor,
+                    backgroundColor: ctx => ctx.raw.backgroundColor,
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2,
+                    shadowBlur: 10,
+                    shadowColor: "rgba(0, 0, 0, 0.6)"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "#1e1b2f",
+                        titleColor: "#f6f6f6",
+                        bodyColor: "#d2c3ff",
+                        borderColor: "#6a1ed3",
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        type: "time",
+                        time: {
+                            unit: "hour",
+                            tooltipFormat: "ff"
+                        },
+                        ticks: {
+                            color: "#ddd"
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: "#ddd"
+                        },
+
+                    }
+                }
+            }
+        });
+
+        // Gradient creators
+        function getGreenGradient(ctx) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, "#1dff4a");
+            gradient.addColorStop(1, "#1dff4a");
+            return gradient;
+        }
+
+        function getRedGradient(ctx) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, "#ff2222");
+            gradient.addColorStop(1, "#ff2222");
+            return gradient;
+        }
+
+
+
+    }
+
+
+    const toggle = document.getElementById('toggleSwitch');
+
+  toggle.addEventListener('change', function () {
+    if (this.checked) {
+      console.log("Switch is ON");
+      // Call your function here
+      onToggle(true);
+    } else {
+      console.log("Switch is OFF");
+      onToggle(false);
+    }
+  });
+
+  function onToggle(state) {
+    // `state` is true if ON, false if OFF
+    if(state){
+        //line
+        renderStockChart(stockData, stockName);
+    }
+
+    else{
+        // candles
+        renderStockGraph(stockData, stockName);
+    }
+  }
+
+</script>
 {% endblock %}

@@ -23,6 +23,30 @@ def get_stock_1hr(stock:str) -> DataFrame:
     cache.set(cache_key, data.to_json(), timeout=300)  # Store as JSON, cache for 5 mins
     return data
 
+def get_stock_15m(stock:str) -> DataFrame:
+    """
+    Function to return stock data at an granuality of 1hr
+    """
+    cache_key = f"stock_15m_{stock}" 
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        data = pd.read_json(cached_data)
+        return data
+
+    ticker = yf.Ticker(stock)
+    data = ticker.history(period="1d", interval="15m")
+    cache.set(cache_key, data.to_json(), timeout=300) 
+    return data
+
+
+@shared_task
+def utility_get_hourly(stock:str) -> DataFrame:
+    """
+    Returns hourlt stock data for a specific stock
+    """
+    return get_stock_15m(stock).to_json()
+
 @shared_task
 def get_top_stock_india():
     """

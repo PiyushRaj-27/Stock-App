@@ -4,7 +4,7 @@ Code for app endpoint
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .utilities import get_stock_1hr, get_top_stock_india
+from .utilities import get_stock_1hr, get_top_stock_india, utility_get_hourly
 from celery.result import AsyncResult
 from django.http import JsonResponse
 
@@ -64,11 +64,28 @@ def search(request):
 
 @login_required(login_url="/accounts/login")
 def stock_dashboard(request, stockname: str):
-    print(f"Request for stock: {stockname}")
-    return dashboard(request)
+    """
+    Handles stock specific dashboard.
+
+    It extracts stock symbol from the request url and returns the stock specific dashboard.
+
+    Returns:
+        The redered stock specific dashboard template.
+    """
+
+    return render(request, "app/stockdashboard.html", {'stock_name':stockname})
 
 @login_required(login_url="/accounts/login")
 def top_india_stock(request):
+    """
+    API end point that handles fetching top indian stocks data.
+
+    It creates a celery task and returns the task id as a response.
+
+    Returns:
+        JSON reponse for task id.
+    """
+
     top_india_data_task = get_top_stock_india.delay()
     return JsonResponse({"task_id": top_india_data_task.id})
 
@@ -78,3 +95,9 @@ def get_result(request):
     result = AsyncResult(task_id)
 
     return JsonResponse({'status': result.status, 'result': result.result})
+
+@login_required(login_url="/accounts/login")
+def get_hourly(request, stockname):
+    hourly_task = utility_get_hourly.delay(stockname)
+    return JsonResponse({"task_id": hourly_task.id})
+

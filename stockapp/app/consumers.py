@@ -2,10 +2,11 @@ import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+from django.core.cache import cache
 import yfinance as yf
 
 global_consumers = {}
-
+global_tasks = {}
 
 class StockConsumer(AsyncWebsocketConsumer):
     """
@@ -17,29 +18,33 @@ class StockConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.stock_name = None
         self.group_name = None
+        self.update_task = None
 
     async def connect(self):
         """
         Handles WebSocket connection. Joins the appropriate Channels group for the stock.
         """
-        self.stock_name = self.scope["url_route"]["kwargs"]["stock_name"]
-
-        # Join stock group
+        self.stock_name:str = self.scope["url_route"]["kwargs"]["stock_name"]
         self.group_name = f"stock_{self.stock_name}"
+        if "^" in self.group_name:
+            self.group_name = self.group_name.replace("^","")
+        
+
+
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name
         )
 
+
         await self.accept()
 
-        # we can use redis to store the global count.
-        global_consumers[self.group_name] = global_consumers.get(self.group_name,0) + 1
-        # Start sending updates
+        # Increment global consumer count
+        global_consumers[self.group_name] = global_consumers.get(self.group_name, 0) + 1
 
+        # Start updates only if first user
         if global_consumers[self.group_name] == 1:
-            asyncio.create_task(self.send_updates())
-
+            global_tasks[self.group_name] = asyncio.create_task(self.send_updates())
 
 
 
@@ -53,7 +58,14 @@ class StockConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+
         global_consumers[self.group_name] -= 1
+
+        # Cancel update task if no users left
+        if global_consumers[self.group_name] == 0:
+            task = global_tasks.pop(self.group_name, None)
+            if task:
+                task.cancel()
         
 
 
@@ -101,7 +113,11 @@ class StockConsumer(AsyncWebsocketConsumer):
         """
         Retrives the data from api and pass it to the front end users.
         """
-
+        cache_key = f"ws_{self.stock_name}"
+        update = cache.get(cache_key)
+        if update:
+            return update
+        
         try:
             ticker = yf.Ticker(self.stock_name)
             data = ticker.history(period = "1d", interval = "1m")
@@ -113,6 +129,7 @@ class StockConsumer(AsyncWebsocketConsumer):
                     "timestamp": data.index[-1].isoformat()
                 }
 
+                cache.set(cache_key, update_data)
                 return update_data
 
             return {}
