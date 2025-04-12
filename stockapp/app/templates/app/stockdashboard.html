@@ -411,6 +411,133 @@
     }
 
 
+function addPredictionToChart(predictionDataObj) {
+    
+
+    // --- (Keep existing validation checks for chart and data) ---
+    if (!chart) {
+        console.error("Chart object is not available. Cannot add prediction.");
+        return;
+    }
+    // Get the canvas rendering context from the chart instance
+    const ctx = chart.ctx; // <<<< Get context here
+    if (!ctx) {
+        console.error("Could not get rendering context (chart.ctx). Cannot create gradient.");
+        return;
+    }
+
+    if (!chart.data || !chart.data.labels || !chart.data.datasets || chart.data.datasets.length === 0 || chart.data.labels.length === 0) {
+        console.error("Chart data structure seems incomplete or empty. Cannot add prediction.");
+        return;
+    }
+    if (chart.data.datasets[0].data.length !== chart.data.labels.length) {
+         console.error("Chart labels and data points count mismatch. Cannot reliably add prediction.");
+         return;
+    }
+
+    const predictionResult = predictionDataObj;
+
+    if (!predictionResult || typeof predictionResult.data !== 'string' || predictionResult.success !== 'True') {
+         console.error(`Prediction data object format invalid or success is not 'True'. Received:`, predictionResult);
+         return;
+    }
+
+    const predictedPrice = parseFloat(predictionResult.data);
+    if (isNaN(predictedPrice)) {
+        console.error(`Predicted price is not a valid number: '${predictionResult.data}'`);
+        return;
+    }
+
+    // --- Get data from the existing chart ---
+    const lastLabelIndex = chart.data.labels.length - 1;
+    let lastLabel = chart.data.labels[lastLabelIndex];
+    const lastPrice = chart.data.datasets[0].data[lastLabelIndex];
+
+    if (typeof lastPrice !== 'number' || isNaN(lastPrice)) {
+         console.error(`Last historical price is not a valid number: '${lastPrice}'. Cannot determine prediction color/gradient.`);
+         return;
+    }
+
+    if (!(lastLabel instanceof Date)) {
+        console.warn("The last label in the chart is not a Date object. Attempting to parse.", "Label:", lastLabel);
+        const timestamp = Date.parse(lastLabel);
+        if (isNaN(timestamp)) {
+            console.error("Could not interpret the last label as a valid date/time.");
+             return;
+        }
+        lastLabel = new Date(timestamp);
+    }
+
+    // --- Calculate the timestamp for the prediction (next day) ---
+    const nextDayDate = new Date(lastLabel);
+    nextDayDate.setDate(nextDayDate.getDate() + 1);
+    // nextDayDate.setHours(16, 0, 0, 0); // Optional
+
+
+    // --- Determine Prediction Color AND Gradient ---
+    let predictionLineColor;
+    let predictionPointColor;
+    let predictionGradient; // Variable to hold the gradient
+
+    // Create gradient (adjust height 300 if needed, but it's often relative)
+    predictionGradient = ctx.createLinearGradient(0, 0, 0, 300);
+
+    if (predictedPrice > lastPrice) {
+        // Green
+        predictionLineColor = 'rgba(28, 164, 76, 1)';
+        predictionPointColor = 'rgba(28, 164, 76, 1)';
+        // Set green gradient colors
+        predictionGradient.addColorStop(0, "rgba(28, 164, 76, 0.5)"); // Semi-transparent green top
+        predictionGradient.addColorStop(1, "rgba(28, 164, 76, 0)");   // Transparent green bottom
+    } else if (predictedPrice < lastPrice) {
+        // Red
+        predictionLineColor = 'rgba(209, 52, 52, 1)';
+        predictionPointColor = 'rgba(209, 52, 52, 1)';
+        // Set red gradient colors
+        predictionGradient.addColorStop(0, "rgba(209, 52, 52, 0.5)"); // Semi-transparent red top
+        predictionGradient.addColorStop(1, "rgba(209, 52, 52, 0)");   // Transparent red bottom
+    } else {
+        // Yellow
+        predictionLineColor = 'rgb(255, 205, 86)';
+        predictionPointColor = 'rgb(255, 205, 86)';
+        // Set yellow gradient colors
+        predictionGradient.addColorStop(0, "rgba(255, 205, 86, 0.5)"); // Semi-transparent yellow top
+        predictionGradient.addColorStop(1, "rgba(255, 205, 86, 0)");   // Transparent yellow bottom
+    }
+    // --- ***************************************** ---
+
+
+    // --- Create the new dataset for the prediction line segment ---
+    const predictionDataset = {
+        label: 'Prediction',
+        data: [],
+        borderColor: predictionLineColor,
+        pointBackgroundColor: predictionPointColor,
+        pointBorderColor: 'white',
+        // --- Add Fill and Background Gradient ---
+        fill: true,                      // Enable filling
+        backgroundColor: predictionGradient, // Apply the created gradient
+        // --- ------------------------------ ---
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        tension: 0.1 // Keep tension low for the segment fill to look right
+    };
+
+    // Create sparse data (important for how fill might render)
+    predictionDataset.data = chart.data.labels.map(() => null);
+    predictionDataset.data[lastLabelIndex] = lastPrice;
+    predictionDataset.data.push(predictedPrice);
+
+    // --- Add the new label (timestamp) and the new dataset ---
+    chart.data.labels.push(nextDayDate);
+    chart.data.datasets.push(predictionDataset);
+
+    // --- Update the chart ---
+    chart.update();
+    
+}
     async function getPredictionToken() {
         let predictionTokenJson = await fetch(`/app/stock/prediction/${stockName}`);
         let predictionTokenRes = await predictionTokenJson.json();
@@ -419,10 +546,37 @@
     }
 
     async function getPrediction() {
-        let token = await getPredictionToken();
-        await pollResult(token, (response) => {
-            console.log(response);
-        })
+    let token;
+    try {
+        token = await getPredictionToken(); // Assume getPredictionToken handles its own errors/returns null
+    } catch (error) {
+         console.error("Error occurred while getting prediction token:", error);
+         return; // Don't proceed without a token
     }
+
+
+    if (token) {
+        // Assuming pollResult takes (taskId, successCallback, errorCallback)
+        await pollResult(token,
+            (response) => { // Success Callback for pollResult
+                // *** Instead of just logging, call the function to update the chart ***
+                try {
+                    addPredictionToChart(response);
+                } catch(error) {
+                    console.error("Error occurred inside addPredictionToChart:", error);
+                    // Handle potential errors during chart update itself
+                }
+                // ***********************************************************************
+            },
+            (error) => { // Error Callback for pollResult
+                console.error("Polling failed for prediction task:", error);
+                // Optionally provide user feedback that prediction failed
+            }
+        );
+    } else {
+        console.error("Could not get prediction token. Prediction fetch aborted.");
+        // Optionally provide user feedback
+    }
+}
 </script>
 {% endblock %}
