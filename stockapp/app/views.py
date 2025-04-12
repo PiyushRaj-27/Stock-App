@@ -4,10 +4,10 @@ Code for app endpoint
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .utilities import get_stock_1hr, get_top_stock_india, utility_get_hourly
-from celery.result import AsyncResult
 from django.http import JsonResponse
+from celery.result import AsyncResult
 
+from .utilities import get_stock_1hr, get_top_stock_india, utility_get_quaterly, make_prediction
 
 # Create your views here.
 @login_required(login_url="/accounts/login")
@@ -32,10 +32,9 @@ def dashboard(request):
             labels_list.append(labels[-7:])
             data_list.append(data[-7:])
             names.append(stock)
-        except:
+        except Exception:
             continue
     data = list(map(list, list(zip(labels_list, data_list, names))))
-   
     return render(request, "app/dashboard.html",{"data":data})
 
 
@@ -91,6 +90,9 @@ def top_india_stock(request):
 
 @login_required(login_url="/accounts/login")
 def get_result(request):
+    """
+    End point to poll for result of execution of celery background task.
+    """
     task_id = request.GET.get('task_id')
     result = AsyncResult(task_id)
 
@@ -98,6 +100,16 @@ def get_result(request):
 
 @login_required(login_url="/accounts/login")
 def get_hourly(request, stockname):
-    hourly_task = utility_get_hourly.delay(stockname)
+    """
+    End point to return task id for quaterly utility execution
+    """
+    hourly_task = utility_get_quaterly.delay(stockname)
     return JsonResponse({"task_id": hourly_task.id})
 
+@login_required(login_url="/accounts/login")
+def get_prediction(requst, stockname):
+    """
+    End point to fetch prediction for stockname
+    """
+    prediction_task = make_prediction.delay(stockname)
+    return JsonResponse({'task_id': prediction_task.id})

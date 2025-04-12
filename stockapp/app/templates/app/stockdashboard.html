@@ -9,6 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 {% endblock %}
 
 
@@ -24,13 +25,13 @@
             <div class="stockdetails">
                 <div class="stockcardtitle">{{ stock_name }}</div>
 
-                <div>
+                <div id="toggler">
                     Line &ThickSpace;
                     <label class="switch">
                         <input type="checkbox" id="toggleSwitch">
                         <span class="slider round"></span>
                     </label>
-                &ThickSpace; Candles
+                    &ThickSpace; Candles
                 </div>
             </div>
             <hr class="hrrule">
@@ -47,15 +48,19 @@
             <div class="stockcarddata">
                 <canvas id="chart-{{ stock_name }}"></canvas>
             </div>
-            
+
         </div>
 
-        <div class="datacard" id="datacard">
-            
+        <div class="datacard-wrapper">
+            <div class="datacard" id="datacard">
+
+            </div>
+
+            <div class="predict-btn" onclick="getPrediction()">Predict</div>
         </div>
+        
     </div>
 
-    <div class="socket-data" id="socket-data">Data</div>
 </div>
 
 
@@ -63,19 +68,19 @@
     const stockName = JSON.parse(document.getElementById('stock_name').textContent);
     let stockData;
     let chart = null;
-    const Socket = new WebSocket(
-        'ws://'
-        + window.location.host
-        + '/ws/stock/'
-        + stockName
-        + '/'
-    );
+    //const Socket = new WebSocket(
+    //     'ws://'
+    //     + window.location.host
+    //     + '/ws/stock/'
+    //     + stockName
+    //     + '/'
+    // );
 
-    Socket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        console.log(data)
-        document.getElementById("socket-data").innerText = `${data.stock} ${data.last_price}`
-    };
+    // Socket.onmessage = function (e) {
+    //     const data = JSON.parse(e.data);
+    //     console.log(data)
+    //     document.getElementById("socket-data").innerText = `${data.stock} ${data.last_price}`
+    // };
 
     async function get_hourly_stocks_task_id() {
         const response = await fetch(`/app/stock/hourly/${stockName}`);
@@ -141,12 +146,11 @@
         const closeNumeric = document.getElementById(`price-${stockName}-close`);
         const diffIndicator = document.createElement("div");
         diffIndicator.classList.add(diff < 0 ? "low-price" : "high-price");
-        diffIndicator.innerText = (diff).toFixed(2);
+        diffIndicator.innerText = (diff >0 ? `+ ${(diff).toFixed(2)}`: `- ${(diff).toFixed(2)}`);
         closeNumeric.innerText = (lastClose).toFixed(2);
         closeNumeric.appendChild(diffIndicator);
 
 
-        console.log(data);
 
         const Low = data.Low;
         const High = data.High;
@@ -154,7 +158,7 @@
         const lowest = Math.min(...Object.values(Low));
         const highest = Math.max(...Object.values(High));
 
-        const datas = {"Open": firstOpen, "High": highest, "Low": lowest, "Volume": 0};
+        const datas = { "Open": firstOpen, "High": highest, "Low": lowest, "Volume": -1, "MKT CAP": -1, "P/E": -1, "Yield": -1, "Beta": -1};
         const datacard = document.getElementById("datacard");
         for (const key in datas) {
             const dataDiv = document.createElement("div");
@@ -175,77 +179,121 @@
         }
     }
 
-    function renderStockGraph(stockData, stockName){
-        let data =  JSON.parse(stockData);
-        if(chart){
-            chart.destroy();
+
+    function renderStockGraph(stockData, stockName) {
+    let data = JSON.parse(stockData);
+    if (chart) {
+        chart.destroy();
+    }
+
+    const timestamps = Object.keys(data["Close"]);
+    const closePrices = Object.values(data["Close"]);
+    const canvasId = `chart-${stockName}`;
+    const priceElementId = `price-${stockName}`;
+    const labels = timestamps.map(ts => new Date(parseInt(ts)));
+
+    const ctx = document.getElementById(canvasId).getContext("2d");
+
+    let gradient;
+    let bcolor;
+
+    if (closePrices.length >= 2) {
+        const last = closePrices[closePrices.length - 1];
+        const first = closePrices[0];
+
+        if (last > first) {
+            // Green gradient
+            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, "rgba(28, 164, 76, 0.5)");
+            gradient.addColorStop(1, "rgba(28, 164, 76, 0)");
+            bcolor = "rgba(28,164,76,1)";
+        } else {
+            // Red gradient
+            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, "rgba(209, 52, 52, 0.5)");
+            gradient.addColorStop(1, "rgba(209, 52, 52, 0)");
+            bcolor = "rgba(209, 52, 52,1)";
         }
-        
+    } else {
+        // Purple gradient fallback
+        gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, "rgba(25, 11, 34, 0)");
+        gradient.addColorStop(1, "rgba(18, 12, 22, 1)");
+        bcolor = "#6a1ed3";
+    }
 
-        const timestamps = Object.keys(data["Close"]);
-        const closePrices = Object.values(data["Close"]);
-        const canvasId = `chart-${stockName}`;
-        const priceElementId = `price-${stockName}`;
-        const labels = timestamps.map(ts => new Date(parseInt(ts)));
-
-        const ctx = document.getElementById(canvasId).getContext("2d");
-        // const priceText = document.getElementById(priceElementId);
-        // priceText.innerText = `RS. ${Math.round((closePrices[closePrices.length - 1] * 100) / 100)}`;
-
-        let gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, "#190b22");
-        gradient.addColorStop(1, "#120c16");
-
-        chart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "", // hide the label
-                    data: closePrices,
+    chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "",
+                data: closePrices,
+                borderColor: bcolor,
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#222",
+                    titleColor: "#fff",
+                    bodyColor: "#ddd",
                     borderColor: "#6a1ed3",
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: "#222",
-                        titleColor: "#fff",
-                        bodyColor: "#ddd",
-                        borderColor: "#6a1ed3",
-                        borderWidth: 1,
-                    }
+                    borderWidth: 1,
                 },
-                scales: {
-                    x: {
-                        type: "time",
-                        time: {
-                            unit: "hour"
-                        },
-                        ticks: { color: "white" },
-                        // grid: { color: "rgba(255,255,255,0.05)" }
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x',
+                        modifierKey: 'ctrl', // or 'alt', 'shift'
                     },
-                    y: {
-                        ticks: { color: "white" },
-                        // grid: { color: "rgba(255,255,255,0.05)" }
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                            modifierKey: 'ctrl' // safer scroll + zoom
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'x',
+                    },
+                    limits: {
+                        x: { min: 'original', max: 'original' },
+                        y: { min: 'original', max: 'original' }
                     }
                 }
+            },
+            scales: {
+                x: {
+                    type: "time",
+                    time: {
+                        unit: "hour"
+                    },
+                    ticks: { color: "white" },
+                    grid: { display: false }
+                },
+                y: {
+                    ticks: { color: "white" },
+                    grid: { display: false },
+                }
             }
-        });
-    }
+        },
+        plugins: [Chart.registry.getPlugin('zoom')]
+    });
+}
 
     function renderStockChart(stockData, stockName) {
 
         const parsedData = JSON.parse(stockData);
-        if(chart){
+        if (chart) {
             chart.destroy()
-        }        
+        }
 
         const canvasId = `chart-${stockName}`;
         const priceElementId = `price-${stockName}`;
@@ -280,7 +328,7 @@
                     shadowOffsetX: 2,
                     shadowOffsetY: 2,
                     shadowBlur: 10,
-                    shadowColor: "rgba(0, 0, 0, 0.6)"
+                    shadowColor: "rgba(0, 0, 0, 0.6)",
                 }]
             },
             options: {
@@ -306,12 +354,13 @@
                         ticks: {
                             color: "#ddd"
                         },
+                        grid: { display: false }
                     },
                     y: {
                         ticks: {
                             color: "#ddd"
                         },
-
+                        grid: { display: false }
                     }
                 }
             }
@@ -339,29 +388,41 @@
 
     const toggle = document.getElementById('toggleSwitch');
 
-  toggle.addEventListener('change', function () {
-    if (this.checked) {
-      console.log("Switch is ON");
-      // Call your function here
-      onToggle(true);
-    } else {
-      console.log("Switch is OFF");
-      onToggle(false);
-    }
-  });
+    toggle.addEventListener('change', function () {
+        if (this.checked) {
+            // Call your function here
+            onToggle(true);
+        } else {
+            onToggle(false);
+        }
+    });
 
-  function onToggle(state) {
-    // `state` is true if ON, false if OFF
-    if(state){
-        //line
-        renderStockChart(stockData, stockName);
+    function onToggle(state) {
+        // `state` is true if ON, false if OFF
+        if (state) {
+            //line
+            renderStockChart(stockData, stockName);
+        }
+
+        else {
+            // candles
+            renderStockGraph(stockData, stockName);
+        }
     }
 
-    else{
-        // candles
-        renderStockGraph(stockData, stockName);
-    }
-  }
 
+    async function getPredictionToken() {
+        let predictionTokenJson = await fetch(`/app/stock/prediction/${stockName}`);
+        let predictionTokenRes = await predictionTokenJson.json();
+        
+        return predictionTokenRes.task_id
+    }
+
+    async function getPrediction() {
+        let token = await getPredictionToken();
+        await pollResult(token, (response) => {
+            console.log(response);
+        })
+    }
 </script>
 {% endblock %}
