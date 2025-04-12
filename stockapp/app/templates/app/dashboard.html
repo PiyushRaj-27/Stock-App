@@ -12,13 +12,13 @@
 <div class="content">
 
     <div class="search_stock">
-        <div class="major">
+        <div class="major animated">
             Search Stock!
         </div>
         <div class="search_form_container">
             <form method="post" action="{% url 'search' %}" class="search_form">
                 {% csrf_token %}
-                <input type="text" name="stock" id="stock" placeholder="Search Stock" class="search_bar" required>
+                <input type="text" name="stock" id="stock" placeholder= "Search" class="search_bar" required>
                 <input type="submit" hidden />
             </form>
         </div>
@@ -27,20 +27,20 @@
     <div class="top-stocks">
         <div class="category">
             <div class="categoryTitle">
-                Top Picks
             </div>
             <div class="stocks">
                 {% for labels, data, name in data %}
                 <div class="stockcard" id="stock-{{ name }}">
                     <div class="stockcardtitle">{{ name }}</div>
+                    <div class="stockcarddata">
+                        <canvas id="chart-{{ name }}"></canvas>
+                    </div>
                     <div class="stocknumerics">
                         <div class="numerics" id="price-{{name}}">
                             Profit: 100%
                         </div>
                     </div>
-                    <div class="stockcarddata">
-                        <canvas id="chart-{{ name }}"></canvas>
-                    </div>
+                    
                 </div>
                 {% endfor %}
             </div>
@@ -50,24 +50,6 @@
     <div class="container">
         <div class="container-title">National Stock Exchange</div>
         <div class="nse-container" id="nseCont">
-        </div>
-    </div>
-    
-
-    <div class="interesting">
-
-        <div class="sectionheader">Interesting Facts</div>
-        <div class="info">
-            <div class="infotext">
-                <div>
-                    The Monday Effect suggests that stock returns on Mondays tend to be lower compared to other days of
-                    the week. This phenomenon has been observed across various stock indices, with historical data
-                    showing slightly negative or lower-than-average returns at the start of the week.
-                </div>
-            </div>
-            <div class="infochart" id="fact1">
-                <canvas id="mondayEffectChart"></canvas>
-            </div>
         </div>
     </div>
 
@@ -85,11 +67,39 @@
         const canvasId = "chart-" + name;
         const ctx = document.getElementById(canvasId).getContext("2d");
         const priceText = document.getElementById("price-" + name)
-        priceText.innerText = `${Math.round((data[data.length - 1] * 100) / 100)} USD`;
+        priceText.innerText = `${(data[data.length - 1]).toFixed(2)} USD`;
+        // console.log(`${data[data.length -1]} ${data[data.length - 2]}`)
+        // let gradient = ctx.createLinearGradient(0, 0, 0, 300); // Adjust height as needed
+        // gradient.addColorStop(0, "#190b22");
+        // gradient.addColorStop(1, "#120c16");
 
-        let gradient = ctx.createLinearGradient(0, 0, 0, 300); // Adjust height as needed
-        gradient.addColorStop(0, "#190b22");
-        gradient.addColorStop(1, "#120c16");
+        let gradient;
+        let bcolor;
+        if (data.length >= 2) {
+            const last = data[data.length - 1];
+            const secondLast = data[data.length - 2];
+
+            if (last > secondLast) {
+                // Profit: green gradient
+                gradient = ctx.createLinearGradient(0, 0, 0, 40);
+                gradient.addColorStop(0, "rgba(28, 164, 76, 0.5)");  // Translucent green
+                gradient.addColorStop(1, "rgba(28, 164, 76, 0)");    // Opaque green
+                bcolor = "rgba(28,164,76)";
+            } else {
+                // Loss: red gradient
+                gradient = ctx.createLinearGradient(0, 0, 0, 40);
+                gradient.addColorStop(0, "rgba(209, 52, 52, 0.5)");  // Translucent red
+                gradient.addColorStop(1, "rgba(209, 52, 52, 0)");    // Opaque red
+                bcolor = "rgba(209,52,52)"
+            }
+        } else {
+            // Default: purple gradient
+            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, "rgba(25, 11, 34, 0)");      // Translucent purple
+            gradient.addColorStop(1, "rgba(18, 12, 22, 1)");        // Opaque purple
+            bcolor = "rgba(255,255,255)"
+        }
+
         new Chart(ctx, {
             type: "line",
             data: {
@@ -97,7 +107,7 @@
                 datasets: [{
                     label: name + " Price",
                     data: data,
-                    borderColor: "#6a1ed3",
+                    borderColor: bcolor,
                     backgroundColor: gradient,
                     fill: true,
                     tension: 0.4
@@ -105,51 +115,28 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Important for dynamic sizing
+                maintainAspectRatio: true, // Important for dynamic sizing
                 plugins: {
                     legend: { display: false }
                 },
                 scales: {
-                    x: { ticks: { color: "white" } },
-                    y: { ticks: { color: "white" } }
+                    x: { ticks: { display: false },
+                    grid: { display: false } },
+                    y: { ticks: { display: false },
+                    grid: { display: false } }
+                },
+                elements: {
+                    point:{
+                        radius: 0
+                    }
                 }
             }
         });
     });
 
 
-    const ctx = document.getElementById('mondayEffectChart').getContext('2d');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            datasets: [{
-                label: 'Avg. Stock Returns (%)',
-                data: [-0.3, 0.5, 0.4, 0.6, 0.7],  // Dummy data
-                backgroundColor: '#6a1ed3',  // White bars with slight transparency
-                borderColor: '#7c25f5',  // White border
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    ticks: { color: 'white' }, // White labels
-
-                },
-                y: {
-                    ticks: { color: 'white' },
-
-                }
-            }
-        }
-    });
+    
+    
 
     async function get_top_stocks_task_id() {
         const response = await fetch(`/app/top_stock`);
@@ -170,7 +157,7 @@
 
         const interval = setInterval(async () => {
             call_count += 1;
-            if (call_count > 5){
+            if (call_count > 5) {
                 console.log("Cannot connect to server");
                 clearInterval(interval);
             }
@@ -178,39 +165,183 @@
             const data = await response.json();
 
             if (data.status === 'SUCCESS') {
-            clearInterval(interval);
-            callback(data.result);
+                clearInterval(interval);
+                callback(data.result);
             }
         }, 2000); // poll every 1 second
     }
 
 
-    async function get_top_stock_data(){
+    async function get_top_stock_data() {
         const task_id = await get_top_stocks_task_id();
-        const mapping = {"^NSEI": "Nifty50", "^BSESN": "Sensex", "RELIANCE.NS": "Reliance", "TCS.NS": "TCS", "TATAMOTORS.NS": "Tata", "ITC.NS": "ITC", "NTPC.NS": "NTPC"}
-        await pollResult(task_id, (response)=>{
-            const nseCont = document.getElementById("nseCont");
-            for (const key in response) {
-                const nseCard = document.createElement("div");
-                const link = document.createElement("a");
-                link.href = `/app/stock/${key}`;
-                const nseName = document.createElement("div");
-                const nseMarket = document.createElement("div");
-                nseName.innerText = mapping[key];
-                nseMarket.innerText = `Rs. ${Math.round(parseInt(response[key])).toString()}`;
-                nseName.classList.add("nse-name");
-                nseMarket.classList.add('nse-market');
-                nseCard.classList.add("nse-card");
-                link.appendChild(nseName);
-                nseCard.appendChild(link);
-                nseCard.appendChild(nseMarket);
-                nseCont.appendChild(nseCard);
+        
+        await pollResult(task_id, (response) => {
+            // console.log(response)
+            // const nseCont = document.getElementById("nseCont");
+            // for (const key in response) {
+            //     const nseCard = document.createElement("div");
+            //     const link = document.createElement("a");
+            //     link.href = `/app/stock/${key}`;
+            //     const nseName = document.createElement("div");
+            //     const nseMarket = document.createElement("div");
+            //     nseName.innerText = mapping[key];
+            //     nseMarket.innerText = `Rs. ${(parseFloat(response[key])).toFixed(2)}`;
+            //     nseName.classList.add("nse-name");
+            //     nseMarket.classList.add('nse-market');
+            //     nseCard.classList.add("nse-card");
+            //     link.appendChild(nseName);
+            //     nseCard.appendChild(link);
+            //     nseCard.appendChild(nseMarket);
+            //     nseCont.appendChild(nseCard);
+            // }
+
+
+            console.log(response);
+    const nseCont = document.getElementById("nseCont");
+    nseCont.innerHTML = ''; // Clear previous cards
+
+    for (const key in response) {
+        const parsedObj = JSON.parse(response[key]);
+        const prices = Object.values(parsedObj);
+        const firstPrice = prices[0];
+        const lastPrice = prices[prices.length - 1];
+
+        // Determine line color
+        let lineColor = 'gray';
+        if (lastPrice > firstPrice) lineColor = 'green';
+        else if (lastPrice < firstPrice) lineColor = 'red';
+
+        // Create card
+        const nseCard = document.createElement("div");
+        nseCard.classList.add("nse-card");
+
+        // Title & price row
+        const topRow = document.createElement("div");
+        topRow.style.display = "flex";
+        topRow.style.justifyContent = "space-between";
+        topRow.style.alignItems = "center";
+
+        const link = document.createElement("a");
+        link.href = `/app/stock/${key}`;
+        link.style.textDecoration = "none";
+
+        const nseName = document.createElement("div");
+        nseName.innerText = key;
+        nseName.classList.add("nse-name");
+        link.appendChild(nseName);
+
+        const nseMarket = document.createElement("div");
+        const market = document.createElement("div");
+    
+        market.innerText = `Rs. ${lastPrice.toFixed(2)}`;
+        nseMarket.append(market);
+        nseMarket.classList.add("nse-market");
+
+        
+
+        // Chart
+        const chartWrapper = document.createElement("div");
+        chartWrapper.classList.add("chart-container");
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 160;
+        canvas.height = 50;
+        const ctx = canvas.getContext("2d");
+        topRow.appendChild(link);
+        nseCard.appendChild(topRow);
+        
+        chartWrapper.appendChild(canvas);
+        topRow.appendChild(chartWrapper)
+        topRow.appendChild(nseMarket);
+        nseCont.appendChild(nseCard);
+
+        // nseCard.appendChild(chartWrapper);
+        let gradient;
+        let bcolor;
+        if (prices.length >= 2) {
+            const last = prices[prices.length - 1];
+            const secondLast = prices[prices.length - 2];
+
+            if (last > secondLast) {
+                // Profit: green gradient
+                gradient = ctx.createLinearGradient(0, 0, 0, 40);
+                gradient.addColorStop(0, "rgba(28, 164, 76, 0.5)");  // Translucent green
+                gradient.addColorStop(1, "rgba(28, 164, 76, 0)");    // Opaque green
+                bcolor = "rgba(28,164,76)";
+            } else {
+                // Loss: red gradient
+                gradient = ctx.createLinearGradient(0, 0, 0, 40);
+                gradient.addColorStop(0, "rgba(209, 52, 52, 0.5)");  // Translucent red
+                gradient.addColorStop(1, "rgba(209, 52, 52, 0)");    // Opaque red
+                bcolor = "rgba(209,52,52)"
             }
+        } else {
+            // Default: purple gradient
+            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, "rgba(25, 11, 34, 0)");      // Translucent purple
+            gradient.addColorStop(1, "rgba(18, 12, 22, 1)");        // Opaque purple
+            bcolor = "rgba(255,255,255)"
+        }
+
+        // Draw sparkline chart
+        new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: prices.map((_, i) => i),
+                datasets: [{
+                    data: prices,
+                    borderColor: bcolor,
+                    backgroundColor: gradient,  // semi-transparent fill
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill:true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 600
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+    }
         })
     }
 
     get_top_stock_data();
-    
+
+
+
+
+    const observe = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.intersectionRatio >= 0.5) {
+                entry.target.classList.add('animation');
+            } else {
+                entry.target.classList.remove('animation');
+            }
+        });
+    }, {
+        threshold: 0.5 // Element must be 50% visible
+    });
+
+
+
+    const toObserve = document.querySelectorAll(".animated");
+
+    toObserve.forEach((elem) => {
+        observe.observe(elem);
+    })
+
 </script>
 </script>
 {% endblock %}

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import dashboard, search, stock_dashboard, get_result, top_india_stock, get_hourly
+from .views import dashboard, search, stock_dashboard, get_result, top_india_stock, get_hourly, get_prediction
 urlpatterns = [
 
     path('dashboard/', dashboard, name="dashboard"),
@@ -24,5 +24,6 @@ urlpatterns = [
     path('top_stock/', top_india_stock, name="top_stock"),
     path('infer/', get_result, name = "infer"),
     path('stock/<str:stockname>', stock_dashboard, name="stock"),
-    path("stock/hourly/<str:stockname>", get_hourly, name="hourly")
+    path("stock/hourly/<str:stockname>", get_hourly, name="hourly"),
+    path('stock/prediction/<str:stockname>', get_prediction, name="prediction")
 ]

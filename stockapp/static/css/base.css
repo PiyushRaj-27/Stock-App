@@ -4,6 +4,7 @@
     --bgshade1: #323232;
     --bgshade2: #131313;
     --bgshade3: #505050;
+    --bgshade4: #29292980;
     --bgshade1text: rgb(189, 189, 189);
     --button: #7c25f5;
     --buttonPressed: #661dcd;
@@ -11,6 +12,8 @@
     --white: #ffffff;
     --google: #4081ec;
     --alert: #6b0000;
+    --greenbtn: rgba(28,164,76,1);
+    --greenbtnPressed: #0b6623;
   }
 
   ::-webkit-scrollbar{
@@ -29,7 +32,7 @@
     display: flex;
     flex-direction: row;
     width: 100vw;
-    background-color: var(--background);
+    background-color: var(--bgshade2);
     color: var(--bgtext);
     padding: 10px;
     align-items: center;
