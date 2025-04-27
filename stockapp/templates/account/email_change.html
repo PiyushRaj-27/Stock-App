@@ -1,13 +1,23 @@
-{% extends "account/base_manage_email.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load allauth %}
 {% block head_title %}
     {% trans "Email Address" %}
 {% endblock head_title %}
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/account/changemail.css' %}">
+{% endblock extrahead %}
 {% block content %}
+    <div class="content">
+
+
     {% element h1 %}
         {% trans "Email Address" %}
     {% endelement %}
+    <p class="notice">
+        Change Email Address.
+    </p>
     {% if not emailaddresses %}
         {% include "account/snippets/warn_no_email.html" %}
     {% endif %}
@@ -17,7 +27,7 @@
             {% csrf_token %}
             {% if current_emailaddress %}
                 {% element field id="current_email" disabled=True type="email" value=current_emailaddress.email %}
-                    {% slot label %}
+                    {% slot label class="label" %}
                         {% translate "Current email" %}:
                     {% endslot %}
                 {% endelement %}
@@ -32,9 +42,11 @@
                         {% endif %}
                     {% endslot %}
                     {% slot help_text %}
-                        {% blocktranslate %}Your email address is still pending verification.{% endblocktranslate %}
+                    <div>
+                        {% blocktranslate %}Verification Pending. Check Your Email. {% endblocktranslate %}
+                        </div>
                         {% element button form="pending-email" type="submit" name="action_send" tags="minor,secondary" %}
-                            {% trans 'Re-send Verification' %}
+                            {% trans 'Re-send Email' %}
                         {% endelement %}
                         {% if current_emailaddress %}
                             {% element button form="pending-email" type="submit" name="action_remove" tags="danger,minor" %}
@@ -65,4 +77,5 @@
             <input type="hidden" name="email" value="{{ new_emailaddress.email }}">
         </form>
     {% endif %}
+        </div>
 {% endblock content %}

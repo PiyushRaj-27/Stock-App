@@ -162,6 +162,36 @@ form > button:hover{
 
 @media screen and (max-width: 650px) {
     .login_card{
-        width: 70%;
+        width: 90%;
+    }
+
+    h1{
+        font-size: 18px;
+    }
+
+    .form > form > p > input {
+        width: 80%;
+        font-size: 12px;
+    }
+
+    form > ul > li {
+        font-size: 11px;
+    }
+
+    .container{
+        height: auto;
+        min-height: 100vh;
+    }
+
+    form > button{
+        width: 60%;
+        font-size: 11px;
+    }
+
+    .signInWithGoogle{
+        font-size: 11px;
+    }
+    .login_message{
+        font-size: 11px;
     }
 }

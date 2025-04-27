@@ -339,6 +339,12 @@
         min-height: 50%;
         max-height: 50%;
         width: 20%;
+        display: flex;
+        flex-direction: column;
+    }
+    .real{
+        font-size: 9px;
+        color: var(--bgtext3);
     }
 
     .stocknumerics{
@@ -369,6 +375,9 @@
         gap: 1rem;
         padding: 0rem;
         width: 90%;
+        height: auto;
+        min-height: 60vh;
+        background-color: var(--bgshade2);
     }
 
     .nse-card{
@@ -400,7 +409,11 @@
         color: var(--bgtext);
         font-size: 12px;
         width: 35%;
+        display: flex;
+        flex-direction: column;
     }
+
+
     .nse-market{
         font-size: 12px;
         display: flex;
