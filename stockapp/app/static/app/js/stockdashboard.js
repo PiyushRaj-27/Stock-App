@@ -114,7 +114,7 @@ function appendPrices(data) {
     diffIndicator.classList.add(diff < 0 ? "low-price" : "high-price");
     diffIndicator.innerText = (diff > 0 ? `+ ${(diff).toFixed(2)}` : `- ${(diff).toFixed(2)}`);
     closeNumeric.innerText = (lastClose).toFixed(2);
-    closeNumeric.appendChild(diffIndicator);
+    // closeNumeric.appendChild(diffIndicator);
 
 
 

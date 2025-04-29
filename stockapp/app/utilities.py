@@ -171,7 +171,20 @@ def get_stock_15m(stock:str) -> DataFrame | None:
 @shared_task
 def utility_get_quaterly(stock:str) -> DataFrame:
     """
-    Returns hourly stock data for a specific stock.
+    Utility function to return stock historical data for the last 1 day
+    at a granularity of 15 minutes for a given stock symbol.
+
+    Leverages the get_stock_data function for fetching and caching.
+
+    Parameters:
+        stock: The stock symbol (e.g., "AAPL", "MSFT").
+
+    Returns:
+        pandas.DataFrame | None: A DataFrame containing the 15-minute historical data
+                                  for the specified period ("1d"), or None if data
+                                  could not be fetched or an error occurred in
+                                  the underlying get_stock_data call. Can return
+                                  an empty DataFrame if yfinance provides one.
     """
     return get_stock_15m(stock).to_json()
 
@@ -183,23 +196,45 @@ def get_top_stock_india():
     stocks = ('^NSEI', '^BSESN', 'RELIANCE.NS', 'TATAMOTORS.NS','NESTLEIND.NS',
               'DABUR.NS','WIPRO.NS','TECHM.NS','LICI.NS','ADANIENT.NS')
     response = {}
+    # for idx, stock in enumerate(stocks):
+    #     cache_key = f"stock_price_{stock}"
+    #     cached_data = cache.get(cache_key)
+
+    #     if (cached_data is not None and (not cached_data.empty)):
+    #         response[stock] = cached_data.to_json()         
+    #         continue
+
+    #     ticker = yf.Ticker(stock)
+    #     data = ticker.history(period="5d", interval="1h")
+    #     try:
+    #         current_close = data['Close']
+    #         cache.set(cache_key, current_close, timeout=30000)
+    #         response[stock] = current_close.to_json()
+
+    #     except KeyError:
+    #         continue
+    # return response
+
+
     for idx, stock in enumerate(stocks):
-        cache_key = f"stock_price_{stock}"
-        cached_data = cache.get(cache_key)
+        _ = idx
+        logger.log("Fetching data for top india stock %s", stock)
 
-        if (cached_data is not None and (not cached_data.empty)):
-            response[stock] = cached_data.to_json()         
-            continue
+        stock_data_dict = get_stock_data(stock=stock, period="5d", interval="1h",
+                                         historyOnly=True)
 
-        ticker = yf.Ticker(stock)
-        data = ticker.history(period="5d", interval="1h")
-        try:
-            current_close = data['Close']
-            cache.set(cache_key, current_close, timeout=30000)
+        history_dict = stock_data_dict.get("history")
+
+        if history_dict is None:
+            logger.warning("get_stock_data returned None for history for %s", stock)
+
+        elif history_dict.empty:
+            logger.info("get_stock_data returned an empty DataFrame for history for %s", stock)
+
+        else:
+            current_close = history_dict["Close"]
             response[stock] = current_close.to_json()
 
-        except KeyError:
-            continue
     return response
 
 @shared_task

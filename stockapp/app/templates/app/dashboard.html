@@ -21,6 +21,8 @@
                 <input type="text" name="stock" id="stock" placeholder="Search" class="search_bar" required>
                 <input type="submit" hidden />
             </form>
+            <div class="suggestions" id="suggestions">
+            </div>
         </div>
     </div>
 
@@ -71,10 +73,7 @@
         const ctx = document.getElementById(canvasId).getContext("2d");
         const priceText = document.getElementById("price-" + name)
         priceText.innerText = `${(data[data.length - 1]).toFixed(2)} USD`;
-        // console.log(`${data[data.length -1]} ${data[data.length - 2]}`)
-        // let gradient = ctx.createLinearGradient(0, 0, 0, 300); // Adjust height as needed
-        // gradient.addColorStop(0, "#190b22");
-        // gradient.addColorStop(1, "#120c16");
+
 
         let gradient;
         let bcolor;
@@ -183,31 +182,16 @@
         const task_id = await get_top_stocks_task_id();
 
         await pollResult(task_id, (response) => {
-            // console.log(response)
-            // const nseCont = document.getElementById("nseCont");
-            // for (const key in response) {
-            //     const nseCard = document.createElement("div");
-            //     const link = document.createElement("a");
-            //     link.href = `/app/stock/${key}`;
-            //     const nseName = document.createElement("div");
-            //     const nseMarket = document.createElement("div");
-            //     nseName.innerText = mapping[key];
-            //     nseMarket.innerText = `Rs. ${(parseFloat(response[key])).toFixed(2)}`;
-            //     nseName.classList.add("nse-name");
-            //     nseMarket.classList.add('nse-market');
-            //     nseCard.classList.add("nse-card");
-            //     link.appendChild(nseName);
-            //     nseCard.appendChild(link);
-            //     nseCard.appendChild(nseMarket);
-            //     nseCont.appendChild(nseCard);
-            // }
+
 
 
             console.log(response);
             const nseCont = document.getElementById("nseCont");
             nseCont.innerHTML = ''; // Clear previous cards
-            pair = {'^NSEI': "Nifty 50", '^BSESN': "Sensex", 'RELIANCE.NS' : "Reliance", 'TATAMOTORS.NS': "Tata Motors Ltd",'NESTLEIND.NS': "Nestle Ind Ltd",
-              'DABUR.NS' : "Dabur Ltd",'WIPRO.NS': "Wipro Ltd",'TECHM.NS': "Tech Mahindra Ltd",'LICI.NS' : "LIC",'ADANIENT.NS' : "Adani Ltd"}
+            pair = {
+                '^NSEI': "Nifty 50", '^BSESN': "Sensex", 'RELIANCE.NS': "Reliance", 'TATAMOTORS.NS': "Tata Motors Ltd", 'NESTLEIND.NS': "Nestle Ind Ltd",
+                'DABUR.NS': "Dabur Ltd", 'WIPRO.NS': "Wipro Ltd", 'TECHM.NS': "Tech Mahindra Ltd", 'LICI.NS': "LIC", 'ADANIENT.NS': "Adani Ltd"
+            }
             for (const key in response) {
                 const parsedObj = JSON.parse(response[key]);
                 const prices = Object.values(parsedObj);
@@ -357,7 +341,73 @@
 
     toObserve.forEach((elem) => {
         observe.observe(elem);
-    })
+    });
+
+
+
+    // search bar related code:
+
+    const stockInput = document.getElementById('stock');
+    const suggestionsBox = document.getElementById('suggestions');
+    let fetchInterval;
+    suggestionsBox.style.display = 'none';
+
+    stockInput.addEventListener('input', function () {
+        if (this.value.length > 3) {
+            suggestionsBox.style.display = 'flex';
+            debouncedSuggestions();
+        } else {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+
+    function debouncedSuggestions() {
+        clearTimeout(fetchInterval);
+        fetchInterval = setTimeout(() => {
+            fetchSuggestions();
+        }, 500); // wait for 500 ms before searching
+    }
+
+    async function fetchSuggestions() {
+        // here call search api;
+        let val = stockInput.value;
+        let url = `http://127.0.0.1:8000/v1/search?q=` + encodeURIComponent(val);
+        console.log(`fetching the url: ${url}`);
+        try {
+            let response = await fetch(url);
+            let data = await response.json();
+            console.log(data);
+            if (data.success) {
+                addSuggestions(data.result);
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function addSuggestions(results) {
+        suggestionsBox.innerHTML = '';
+
+        let maxSuggestions = Math.min(5, results.length);
+        for (let i = 0; i < maxSuggestions; i++) {
+            let [name, symbol] = results[i]; 
+
+            let link = document.createElement('a');
+            link.href = `/app/stock/${name}`;
+            link.style.textDecoration = 'none';
+
+            let suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.textContent = `${name} (${symbol})`;
+
+            link.appendChild(suggestionItem);
+            suggestionsBox.appendChild(link);
+        }
+
+        suggestionsBox.style.display = maxSuggestions > 0 ? 'flex' : 'none';
+    }
 
 </script>
 </script>
