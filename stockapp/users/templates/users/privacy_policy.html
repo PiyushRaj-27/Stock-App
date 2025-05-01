@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/policy.css' %}">
+<title>Profile</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content">
+        <div class="content-title"> Privacy Policy</div>
+        <div class="section">
+            <div class="section-title">
+                Introduction
+            </div>
+            <div class="section-text">
+                <p>
+                    <b><b>{{ company_name }}</b></b> ("Company", "we", "us") respects your privacy. This Privacy Policy
+                    explains how we collect, use, disclose, and protect your personal information when you use the {{ application_name }} (the "App" or "Service"). By using the App, you consent to the data practices described in
+                    this policy​.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Information We Collect
+            </div>
+            <div class="section-text">
+                <p>
+                    We may collect the following types of information from you:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Personal Identifiers:</b> such as your name, email address, phone number, or account login
+                        details when you register or contact us.
+                    </li>
+
+                    <li>
+                        <b>Payment Information:</b> (if applicable) billing details or transaction data when you
+                        purchase predictions (handled securely via our payment processor – we do not store full credit
+                        card numbers on our servers).
+                    </li>
+
+                    <li>
+                        <b>Device and Usage Data:</b> information about your device (e.g., device ID, OS, browser type)
+                        and how you use the App (e.g., pages or screens viewed, features used, access times, and
+                        referring website). This may include your IP address and device identifiers.
+                    </li>
+
+                    <li>
+                        <b>Cookies and Tracking:</b> We use cookies or similar technologies to remember your preferences
+                        and
+                        track usage of our App​. This helps us analyze traffic and improve the user experience. You can
+                        control cookies through
+                        your browser settings.
+                    </li>
+
+                    <li>
+                        <b>Location Data:</b> (if applicable) approximate location information, if you opt to share it,
+                        to personalize content or comply with regional requirements.
+                    </li>
+                    <li>
+                        <b>Stock Query Data:</b> the queries or predictions you request (e.g., which stock symbols you
+                        ask about). While this may not be personal info by itself, it’s tied to your account for
+                        providing the service.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <div class="section">
+            <div class="section-title">
+                How We Use Your Information
+            </div>
+            <div class="section-text">
+                <p>
+                    <b><b>{{ company_name }}</b></b> uses the collected information for purposes that include:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Providing the Service:</b> We use personal and usage data to operate the App and deliver
+                        predictions you request (for example, using your query history to generate results, or your
+                        email to send receipts).
+                    </li>
+
+                    <li>
+                        <b>Processing Transactions:</b> Billing information is used to process your payments for each
+                        prediction or subscription and to prevent fraudulent transactions.
+                    </li>
+
+                    <li>
+                        <b>Improvement and Analytics:</b> We analyze usage data and feedback to improve our algorithms,
+                        features, and user experience​. For instance, tracking which predictions are requested helps us
+                        understand demand. We may use
+                        third-party analytics tools (like Google Analytics) that collect anonymized information about
+                        app usage​.
+
+                    <li>
+                        <b>Customer Support:</b> If you contact us, we will use your contact information and any details
+                        you provide to assist you and resolve issues.
+                    </li>
+
+                    <li>
+                        <b>Communications:</b> We may send you service-related communications (e.g., payment
+                        confirmations, important updates). We may also send promotional emails if you have opted in,
+                        which you can opt out of at any time.
+                    </li>
+                    <li>
+                        <b>Legal Compliance:</b> To comply with legal obligations, such as know-your-customer (KYC)
+                        rules, tax laws, or responding to lawful requests by authorities.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <div class="section-title">
+                How We Disclose or Share Information
+            </div>
+            <div class="section-text">
+                <p>
+                    We do not sell your personal data to third parties​. We only share information in the following
+                    circumstances:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Service Providers:</b> We share necessary information with trusted third-party service
+                        providers who help us run our business (for example, payment processors, cloud hosting,
+                        analytics services). These parties are bound by contracts to use your data only for our purposes
+                        and under confidentiality.
+                    </li>
+
+                    <li>
+                        <b>Legal Requirements:</b> We may disclose your information if required to do so by law or in
+                        response to valid requests by public authorities (e.g., for fraud prevention or regulatory
+                        compliance in the financial sector).
+                    </li>
+
+                    <li>
+                        <b>Improvement and Analytics:</b> We analyze usage data and feedback to improve our algorithms,
+                        features, and user experience​. For instance, tracking which predictions are requested helps us
+                        understand demand. We may use
+                        third-party analytics tools (like Google Analytics) that collect anonymized information about
+                        app usage​.
+
+                    <li>
+                        <b>Business Transfers:</b> If <b><b>{{ company_name }}</b></b> is involved in a merger, acquisition,
+                        or asset sale, your information may be transferred to the successor company. We will notify you
+                        (e.g., via email or notice on our site) before your data is subject to a different privacy
+                        policy.
+                    </li>
+
+                    <li>
+                        <b>With Your Consent:</b> We will share your personal information with third parties only with
+                        your consent or at your direction. For instance, if you opt-in to share data with a partner app
+                        or request we export your data to a third-party service.
+
+                    </li>
+                </ul>
+                <br>
+                <p>
+                    In all cases, we limit the information shared to what is necessary for the purpose. By using the
+                    Service, you acknowledge these potential disclosures.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Data Security
+            </div>
+            <div class="section-text">
+                <p>
+                    We take security measures seriously to protect your personal information. These measures include
+                    encryption of sensitive data in transit (e.g., SSL/TLS) and at rest where applicable, regular
+                    security audits, and restricted access controls to personal data​. However, no method of
+                    transmission over the internet or electronic storage is 100% secure, so we
+                    cannot guarantee absolute security. You are responsible for maintaining the security of your account
+                    password and for any activities done under your credentials.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Data Retention
+            </div>
+            <div class="section-text">
+                <p>
+                    We will retain your personal information for as long as necessary to fulfill the purposes outlined
+                    in this policy (for example, as long as you have an account and for a reasonable period thereafter),
+                    and as required by law. Prediction logs or financial transaction records may be kept longer if
+                    needed for legal compliance or internal analysis, but we will handle them in accordance with this
+                    policy. If you request deletion, we will delete your data as described below, unless we are required
+                    to keep it for legal reasons.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Your Rights and Choices
+            </div>
+            <div class="section-text">
+                <p>
+                    Depending on your jurisdiction and applicable laws, you may have the following rights regarding your
+                    personal data:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Access and Portability:</b> You can request a copy of the personal data we hold about you and, where applicable, ask for it in a machine-readable format.
+                    </li>
+
+                    <li>
+                        <b>Processing Transactions:</b> Billing information is used to process your payments for each
+                        prediction or subscription and to prevent fraudulent transactions.
+                    </li>
+
+                    <li>
+                        <b>Correction:</b> You can request correction of inaccurate personal information we have about you.
+
+                    <li>
+                        <b>Deletion:</b> You can ask us to delete your personal data. Note that we may retain certain information as required by law or for legitimate business purposes
+                    </li>
+
+                    <li>
+                        <b>Withdrawal of Consent:</b> If we are processing your personal data based on your consent, you have the right to withdraw that consent at any time (this will not affect processing already occurred).
+                    </li>
+                    <li>
+                        <b>Opt-out of Marketing:</b> You can opt out of receiving promotional emails from us by following the unsubscribe instructions in those emails or contacting us. Even if you opt out, we may still send you non-promotional messages related to transactions or our ongoing business relations.
+                    </li>
+                </ul>
+                <br><p>
+                    To exercise any of these rights, please contact us at <b>n8wing.017@gmail.com</b>. We will respond to your request within a reasonable timeframe and in accordance with applicable laws. For your security, we may need to verify your identity before fulfilling certain requests.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Children Privacy
+            </div>
+            <div class="section-text">
+                <p>
+                    <b><b>{{ application_name }}</b></b> is not intended for children under the age of 18, and we do not knowingly collect personal information from children under 18​. If you are under 18, do not use the App or provide any information to us. If we learn we have collected personal data from a child under 18, we will delete it. If you are a parent or guardian and believe we have information about a minor, please contact us to remove it. (If your country’s law sets a different age for minors (e.g., under 16), use that age accordingly.)
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Changes to this Privacy Policy
+            </div>
+            <div class="section-text">
+                <p>
+                    We may update this Privacy Policy from time to time. If we make material changes, we will notify you by updating the “Last updated” date at the top of this policy, and in some cases, we may provide additional notice (such as adding a statement in the app or sending you an email notification). Your continued use of <b><b>{{ application_name }}</b></b> after any changes indicates your acceptance of the revised policy​. We encourage you to review this Policy periodically.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Contact Us
+            </div>
+            <div class="section-text">
+                <p>
+                    If you have questions or concerns about this Privacy Policy or our data practices, please contact us at:
+                    <br> Email: n8wing.017@gmail.com
+                </p> <br>
+                <p>We will do our best to address your inquiry promptly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

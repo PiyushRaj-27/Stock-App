@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Purchase{% endblock %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/purchase.css' %}">
+<title>Profile</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="price-container">
+        <div class="price-title">Choose What's Best For You</div>
+        <div class="price-card-container">
+            <div class="price-card">
+                <div class="price-info">
+                    <div class="price-name">
+                        Basic
+                    </div>
+                </div>
+
+                <div class="price"> <div class="diagonal-strike"> ₹ 99 </div> ₹ 49 </div>
+                <div class="details">
+                    <ul>
+                    <li>
+                        A Perfect plan for starters who want to test the application
+                    </li>
+                    <li>
+                        1 Credits Point
+                    </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="purchase">Coming Soon!</div>
+            </div>
+            <div class="price-card">
+                <div class="price-info">
+                    <div class="price-name">
+                        Plus
+                    </div>
+                    <div class="popular">
+                        Most Popular!
+                    </div>
+                </div>
+
+                <div class="price"><div class="diagonal-strike"> ₹ 149 </div> ₹ 99</div>
+                <div class="details">
+                    <ul>
+                    <li>
+                        A Perfect Plan For Quick Predictions
+                    </li>
+                    <li>
+                        10 Credits Points
+                    </li>
+                    <li>
+                        1 Free use
+                    </li>
+                </ul>
+                </div>
+
+                <div class="purchase">Coming Soon!</div>
+            </div>
+            <div class="price-card">
+                <div class="price-info">
+                    <div class="price-name">
+                        Pro
+                    </div>
+                </div>
+
+                <div class="price"><div class="diagonal-strike"> ₹ 199 </div> ₹ 149</div>
+                <div class="details">
+                    <ul>
+                        <li>
+                            A Perfect Plan For Hassle Free Predictions
+                        </li>
+
+                        <li>
+                            20 Credits Points
+                        </li>
+
+                        <li>
+                            2 Free use
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="purchase">Coming Soon!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

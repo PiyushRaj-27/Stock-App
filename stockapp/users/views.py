@@ -71,3 +71,38 @@ def update_profile(request):
         return redirect('profile')
 
     return render(request, 'users/update_profile.html')
+
+@login_required(login_url="/accounts/login")
+def purhcase_credits(request):
+    """
+    To handle credits purchase requests
+    """
+
+    return render(request, "users/purchase.html")
+
+def privacy_policy(request):
+    """
+    To handle privacy policy page.
+    """
+
+    return render(request, "users/privacy_policy.html", { "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+                                               })
+
+def terms_of_service(request):
+    """
+    To handle terms of service page.
+    """
+
+    return render(request, 'users/tos.html', { "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+                                               })
+
+def refund_policy(request):
+    """
+    To handle refund Policy page.
+    """
+
+    return render(request, 'users/refund.html', { "effective_date": "May 2025", "allow_days": "7", "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+                                               })

@@ -4,6 +4,7 @@ Utility Functions for normal API working
 import json
 import logging
 import requests
+from io import StringIO
 import yfinance as yf
 import pandas as pd
 from pandas import DataFrame
@@ -36,10 +37,17 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
     info = None
 
     try:
-        history_json = cache.get(cache_key_history, "")
-        history = pd.read_json(history_json)
-        info_json = cache.get(cache_key_info, "")
-        info = json.loads(info_json)
+        if historyOnly:
+            history_json = cache.get(cache_key_history, "")
+            history = pd.read_json(StringIO(history_json))
+        elif informationOnly:
+            info_json = cache.get(cache_key_info, "")
+            info = json.loads(info_json)
+        else:
+            history_json = cache.get(cache_key_history, "")
+            history = pd.read_json(StringIO(history_json))
+            info_json = cache.get(cache_key_info, "")
+            info = json.loads(info_json)
 
     except ConnectionError as e:
         logger.error("Connection to redis cache failed. Fallback to live: %s", e)
@@ -48,7 +56,7 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
         logger.error("Redis took too long to response: %s", e)
 
     except Exception as e:
-        logger.error("Cache get failed with exception: %s .Fallback to live", e)
+        logger.error("Cache get failed with exception: %s. Fallback to live", e)
 
     if (history is None or history.empty) and not informationOnly:
         logger.warning("Fetching live data for stock %s", stock)
@@ -58,6 +66,7 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
             history = ticker.history(period=period, interval=interval)
 
             try:
+                print("setting cache")
                 cache.set(cache_key_history, history.to_json(), timeout=HISTORY_TIMEOUT)
 
             except ConnectionError as e:
@@ -67,10 +76,10 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
                 logger.error("Redis took too long to response: %s", e)
 
             except Exception as e:
-                logger.error("cache set failed: %s .Data cannot be cached", e)
+                logger.error("cache set failed: %s. Data cannot be cached", e)
 
         except YFException as e:
-            logger.log("Failed to fetch history from Yfinance %s", e)
+            logger.info("Failed to fetch history from Yfinance %s", e)
             history = None
 
 
@@ -94,7 +103,7 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
                 logger.error("cache set failed: %s .Data cannot be cached", e)
 
         except YFException as e:
-            logger.log("Failed to fetch history from Yfinance %s", e)
+            logger.info("Failed to fetch history from Yfinance %s", e)
             info = None
 
 
@@ -218,13 +227,18 @@ def get_top_stock_india():
 
     for idx, stock in enumerate(stocks):
         _ = idx
-        logger.log("Fetching data for top india stock %s", stock)
+        logger.info("Fetching data for top india stock %s", stock)
 
         stock_data_dict = get_stock_data(stock=stock, period="5d", interval="1h",
                                          historyOnly=True)
 
         history_dict = stock_data_dict.get("history")
 
+        stock_info_dict = get_stock_data(stock=stock, informationOnly=True)
+
+        information_dict = stock_info_dict.get("info")
+        currency = information_dict.get("financialCurrency")
+        real_name = information_dict.get("shortName")
         if history_dict is None:
             logger.warning("get_stock_data returned None for history for %s", stock)
 
@@ -233,7 +247,7 @@ def get_top_stock_india():
 
         else:
             current_close = history_dict["Close"]
-            response[stock] = current_close.to_json()
+            response[stock] = {'data': current_close.to_json(), 'real_name': real_name, 'currency' : currency}
 
     return response
 

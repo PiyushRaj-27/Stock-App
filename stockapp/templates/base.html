@@ -34,6 +34,13 @@
                         </div>
                     </div>
                     <div class="dropdown-item">
+                        <div class="dropdown-text">
+                            <a href="{% url 'purchase'%}" style="color: white; font-size: 15px; justify-content: start;">
+                                Purchase Credits
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
                         <form method="post" action="{% url 'account_logout' %}" >   
                             {% csrf_token %}
                             <button type="submit" class="logout-btn">Logout</button> 
@@ -68,10 +75,10 @@
                 <hr width="100%">
                 <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a> </div>
             </div>
-            <form method="post" action="{% provider_login_url "google" %}" class="google-login">
+            <!-- <form method="post" action="{% provider_login_url "google" %}" class="google-login">
                 {% csrf_token %}
                 <button type="submit" class="signInWithGoogle">Sign in with Google</button>
-            </form>
+            </form> -->
         </div>
     </div>
 
@@ -81,7 +88,7 @@
     <footer class="footer">
         <div class="footer-content">
             <p>© {% now "Y" %} Celestiya. All rights reserved.</p>
-            
+            <div class="footer-nav"><a href="{% url 'privacy_policy' %}"><div>Privacy Policy</div></a> <div>|</div> <a href="{% url 'tos' %}"><div>Terms of Service</div></a> <div>|</div> <a href="{% url 'refund_policy'%}"><div>Refund Policy</div></a></div>
         </div>
     </footer>
 </body>

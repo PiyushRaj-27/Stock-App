@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Refund Policy{% endblock %}
+{% block extrahead %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/policy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content">
+        <div class="content-title">Refund Policy</div>
+        <div class="section">
+            <div class="section-text">
+                <p>
+                    Effective Date: {{ effective_date }} <b>{{ company_name }}</b> strives for customer satisfaction. This Refund
+                    Policy outlines when refunds for <b>{{ application_name }}</b> (the "Service") may be provided for purchases of stock
+                    predictions or related services. By making a purchase, you agree to this policy.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                All Sales Are Final (General Policy)
+            </div>
+            <div class="section-text">
+                <p>
+                    Due to the digital and informational nature of our product, all sales are considered final once you
+                    have received the requested stock prediction or content. We do not issue refunds for digital
+                    services once the order is fulfilled. When you pay for a prediction, you gain immediate access to
+                    valuable information that cannot be “returned.” Example: If you purchase a one-time stock prediction
+                    and we deliver the prediction to your app account or email, the transaction is complete and not
+                    reversible. We cannot refund this purchase simply because the outcome did not meet expectations, or
+                    you changed your mind. (Remember: our predictions are not guaranteed, as noted in our Terms of
+                    Service’s disclaimers.)
+                </p> <br>
+            </div>
+        </div>
+
+
+
+        <div class="section">
+            <div class="section-title">
+                Exceptions – When a Refund May Be Issued
+            </div>
+            <div class="section-text">
+                <p>
+                    In certain exceptional cases, we may provide a full or partial refund, or a credit for future
+                    services, at our discretion:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Non-Delivery of Service:</b> If due to a technical issue on our end (server error, app crash,
+                        etc.), you
+                        did not receive the prediction or content you paid for, you are eligible for a refund of that
+                        purchase. Please contact us within {{ support_days }} of the purchase with details (transaction ID, time,
+                        and
+                        what happened). A prediction is considered delivered if it has been sent to your account or
+                        provided
+                        to you and no error report was made within the timeframe.
+                    </li>
+
+                    <li>
+                        <b>Incorrect Billing / Duplicate Charge:</b> If you were charged more than once for the same
+                        prediction
+                        or charged an incorrect amount, we will refund any excess charges once verified.
+                    </li>
+
+                    <li>
+                        <b>Content Not as Described or Error in Content:</b> In the unlikely event that the prediction
+                        content delivered is completely different from what was promised (for example, you paid for a
+                        prediction on Stock A but received data for Stock B), you may request a correction or refund.
+                        Minor inaccuracies or undesired outcomes (e.g., you disagree with the prediction) do not qualify
+                        as “not as described.”
+                    </li>
+
+                    <li>
+
+                        <b>Extenuating Circumstances:</b> We may consider refunds in other extraordinary situations on a
+                        case-by-case basis. For example, if a user could not access the Service at all due to our system
+                        downtime during the period of purchase, or other situations required by consumer protection law
+                        in your jurisdiction.
+                    </li>
+                </ul>
+                <br>
+                <p>
+                    All refund requests are evaluated in good faith, but approval is not guaranteed except where
+                    required by law. Our goal is to be fair and reasonable, ensuring genuine issues are resolved while
+                    preventing abuse of this policy.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <div class="section-title">
+                How to Request a Refund
+            </div>
+            <div class="section-text">
+                <p>
+                    If you believe you qualify for a refund under the above criteria, please take the following steps:
+                </p> <br>
+
+                <ul>
+
+                    <li>
+                        <b>Contact Support:</b> Email us at {{ email }} to
+                        submit your
+                        refund request. Include your account username/email, the transaction or order ID, date of
+                        purchase,
+                        and a detailed description of the issue.
+                    </li>
+                    <li>
+                        <b>Timeframe:</b> Submit your refund request within {{ support_days }} of the purchase in question.
+                        Requests made
+                        after a prolonged period (e.g., many weeks later) may be harder to verify and less likely to be
+                        approved, except as required by law.
+                    </li>
+                    <li>
+                        <b>Review Process:</b> Our support team will review your request, verify the transaction and the
+                        issue. We
+                        may contact you for additional information or troubleshooting steps (for instance, if a
+                        prediction
+                        didn’t display, we might help you retrieve it).
+                    </li>
+                    <li>
+                        <b>Resolution:</b> If a refund is approved, we will process it through the original payment
+                        method. Please
+                        allow {{ allow_days }} for the credit to appear, depending on your bank or payment provider. If
+                        a
+                        refund is not approved, we will provide the reason and, where possible, offer alternative
+                        solutions
+                        (such as a credit or re-delivery of the prediction).
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Chargebacks and Disputes
+            </div>
+            <div class="section-text">
+                <p>
+                    If you initiate a chargeback or dispute with your bank or credit card for a charge that corresponds
+                    to a <b>{{ application_name }}</b> purchase, we reserve the right to suspend your account until the dispute is
+                    resolved. We encourage users to contact us first to resolve any payment issues, as chargebacks can
+                    delay resolution. Fraudulent chargebacks (i.e., claiming a refund via the bank while still receiving
+                    the service) may result in account termination.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Policy Updates
+            </div>
+            <div class="section-text">
+                <p>
+                    This Refund Policy may be updated from time to time. We will notify users of any significant changes
+                    by posting the new policy in the app or on our website and updating the effective date. It’s your
+                    responsibility to review this policy periodically. Continued use of <b>{{ application_name }}</b> after changes
+                    signifies acceptance of the revised Refund Policy.
+                </p>
+            </div>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-title">
+                Contact Us
+            </div>
+            <div class="section-text">
+                <p>
+                    If you have questions or concerns about these Terms or the Service, you can contact us at:
+                    <br> Email: {{ email }}
+                </p> <br>
+                <p>We will do our best to address your inquiry promptly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

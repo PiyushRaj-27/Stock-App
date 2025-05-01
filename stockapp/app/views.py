@@ -158,7 +158,7 @@ def get_task_result(request):
         return JsonResponse({'status': "FAILURE", 'result': None})
 
     except Exception as e:
-        logger.error("Exception while initating Celery task: trigger_top_india_stock_task with message: %s", e)
+        logger.error("Exception while initating Celery task: with message: %s", e)
         return JsonResponse({"task_id": "-1", "success": False})
 
 @login_required(login_url="/accounts/login")

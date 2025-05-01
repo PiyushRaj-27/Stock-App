@@ -26,35 +26,45 @@
         </div>
     </div>
 
-    <div class="top-stocks">
-        <div class="category">
-            <div class="categoryTitle">
-            </div>
-            <div class="stocks">
-                {% for labels, data, name, real in data %}
-                <div class="stockcard" id="stock-{{ name }}">
-                    <div class="stockcardtitle">
-                        <div class="Symbol">{{ name }}</div>
-                        <div class="real">{{real}}</div>
+    <div class="container">
+        <div class="container-title">
+            International Stock Exchange
+        </div>
+        <div class="stock-container">
+            {% for labels, data, name, real in data %}
+            <div class="stock-card" id="stock-{{ name }}">
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+
+                    <a href="/app/stock/{{name}}" style="text-decoration: none;">
+                        <div class="stock-name">
+                            <div class="symbol">{{ name }}</div>
+                            <div class="real">{{real}}</div>
+                        </div>
+                    </a>
+                    <div class="chart-container">
+                        <canvas id="chart-{{ name }}" width="200" height="62"
+                            style="display: block; box-sizing: border-box; height: 50px; width: 160px;"></canvas>
                     </div>
-                    <div class="stockcarddata">
-                        <canvas id="chart-{{ name }}"></canvas>
-                    </div>
-                    <div class="stocknumerics">
+                    <div class="stock-market">
                         <div class="numerics" id="price-{{name}}">
-                            Profit: 100%
                         </div>
                     </div>
-
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
 
     <div class="container">
         <div class="container-title">National Stock Exchange</div>
-        <div class="nse-container" id="nseCont">
+        <div class="stock-container span-height" id="nseCont">
+        </div>
+    </div>
+
+    <div class="warning">
+        <div class="warning-text">
+            Disclaimer: The stock price predictions provided by this application are generated through algorithmic models and are intended for informational purposes only. They do not constitute financial advice, investment advice, or a recommendation to buy, sell, or hold any security. The predictions may not be accurate, and past performance is not indicative of future results. Users are solely responsible for any financial decisions made based on the information provided. We strongly advise consulting with a licensed financial advisor before making any investment decisions. By using this service, you acknowledge and agree that you bear full responsibility for your own investment decisions.
         </div>
     </div>
 
@@ -183,17 +193,11 @@
 
         await pollResult(task_id, (response) => {
 
-
-
             console.log(response);
             const nseCont = document.getElementById("nseCont");
             nseCont.innerHTML = ''; // Clear previous cards
-            pair = {
-                '^NSEI': "Nifty 50", '^BSESN': "Sensex", 'RELIANCE.NS': "Reliance", 'TATAMOTORS.NS': "Tata Motors Ltd", 'NESTLEIND.NS': "Nestle Ind Ltd",
-                'DABUR.NS': "Dabur Ltd", 'WIPRO.NS': "Wipro Ltd", 'TECHM.NS': "Tech Mahindra Ltd", 'LICI.NS': "LIC", 'ADANIENT.NS': "Adani Ltd"
-            }
             for (const key in response) {
-                const parsedObj = JSON.parse(response[key]);
+                const parsedObj = JSON.parse(response[key]['data']);
                 const prices = Object.values(parsedObj);
                 const firstPrice = prices[0];
                 const lastPrice = prices[prices.length - 1];
@@ -205,7 +209,7 @@
 
                 // Create card
                 const nseCard = document.createElement("div");
-                nseCard.classList.add("nse-card");
+                nseCard.classList.add("stock-card");
 
                 // Title & price row
                 const topRow = document.createElement("div");
@@ -219,14 +223,14 @@
 
                 const nseName = document.createElement("div");
                 // nseName.innerText = key;
-                nseName.classList.add("nse-name");
+                nseName.classList.add("stock-name");
 
                 const sym = document.createElement("Symbol");
                 sym.classList.add("symbol");
                 const real = document.createElement("Real");
                 real.classList.add("real");
                 sym.innerText = key;
-                real.innerText = pair[key];
+                real.innerText = response[key]['real_name'];
                 nseName.appendChild(sym);
                 nseName.appendChild(real);
                 link.appendChild(nseName);
@@ -236,7 +240,7 @@
 
                 market.innerText = `Rs. ${lastPrice.toFixed(2)}`;
                 nseMarket.append(market);
-                nseMarket.classList.add("nse-market");
+                nseMarket.classList.add("stock-market");
 
 
 
@@ -392,7 +396,7 @@
 
         let maxSuggestions = Math.min(5, results.length);
         for (let i = 0; i < maxSuggestions; i++) {
-            let [name, symbol] = results[i]; 
+            let [name, symbol] = results[i];
 
             let link = document.createElement('a');
             link.href = `/app/stock/${name}`;

@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service {% endblock %}
+{% block extrahead %}
+
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/policy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content">
+        <div class="content-title">Terms of Service</div>
+        <div class="section">
+            <div class="section-title">
+                Introduction
+            </div>
+            <div class="section-text">
+                <p>
+                    These Terms of Service (the "Terms") are a legal agreement between <b>{{ company_name }}</b>
+                    ("Company", "we", "us") and the user ("you") of the <b><b>{{ application_name }}</b></b> application
+                    and
+                    related services (the "Service"). By accessing or using the Service, you agree to be bound by these
+                    Terms. If you do not agree, please do not use the Service.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Eligibility and Accounts
+            </div>
+            <div class="section-text">
+                <p>
+                    To use our Service, you must be at least {{ age }} years old (or the age of majority in your
+                    jurisdiction) and capable of forming a binding contract. You agree to provide accurate registration
+                    information and keep your account credentials secure. You are responsible for all activities under
+                    your account. If we suspect unauthorized use or violation of these Terms, we may suspend or
+                    terminate your access.
+                </p> <br>
+            </div>
+        </div>
+
+
+
+        <div class="section">
+            <div class="section-title">
+                Description of service
+            </div>
+            <div class="section-text">
+                <p>
+                    <b><b>{{ application_name }}</b></b> provides a platform for stock market predictions and related
+                    financial
+                    data insights. The Service may include algorithmic predictions, analytics, alerts, or other
+                    informational content. All predictions and information are provided for informational and
+                    educational purposes only and not intended as personalized investment advice​. You understand that
+                    the Service does not guarantee any specific outcome or profit.
+                </p> <br>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <div class="section-title">
+                No Financial Advice & Risk Warning
+            </div>
+            <div class="section-text">
+                <p>
+                    All information, predictions, and signals provided by <b><b>{{ application_name }}</b></b> are not
+                    financial or investment advice​. <b>{{company_name}}</b> is not a registered investment advisor, and
+                    the content is general in nature. Past performance is not indicative of future results. You should
+                    always conduct your own research or consult a licensed financial advisor before making investment
+                    decisions. By using our Service, you acknowledge that stock trading involves risk, and you assume
+                    full responsibility for any trades or investments you make, including any loss of money.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Service Usage Rules (Acceptable Use)
+            </div>
+            <div class="section-text">
+                <p>
+                    When using <b>{{ application_name }}</b>, you agree to:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Lawful Use:</b> Use the Service only for lawful purposes and in accordance with these Terms.
+                    </li>
+                    <li>
+                        <b>Personal Use:</b> Use the predictions and data for your personal, non-commercial use. You
+                        will not redistribute or resell our predictions without permission.
+                    </li>
+                    <li>
+                        <b>No Abuse:</b> Do not attempt to hack, disrupt, excessively scrape, or reverse-engineer our
+                        app or algorithms. Do not use the Service in any manner that could damage, disable, or
+                        overburden our infrastructure.
+                    </li>
+                    <li>
+                        <b>No Improper Content:</b> Do not input or transmit any material that is harmful, fraudulent,
+                        or violates any third-party rights (including intellectual property or privacy rights).
+                    </li>
+                </ul>
+                <br>
+                <p>
+                    We reserve the right to suspend or terminate your access if you violate these rules or engage in
+                    unlawful or inappropriate conduct​.
+                </p>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Payments and Fees
+            </div>
+            <div class="section-text">
+                <ul>
+                    <li>
+                        <b>Pricing:</b> Users are charged per prediction at the rate disclosed in the app (for example,
+                        a certain fee per stock prediction). You agree to pay all fees and applicable taxes for each
+                        prediction request at the time of purchase. Prices are subject to change, but any changes will
+                        be communicated or posted in advance.
+                    </li>
+                    <li>
+                        <b>Billing:</b> Payments are processed via [Processor Name] or the app store billing
+                        system. You must provide a valid payment method. By submitting a payment, you authorize us or
+                        our payment processor to charge the specified fees to your payment method.
+                    </li>
+                    <li>
+                        <b>Refunds:</b> All sales are final. Once a prediction is delivered to you, we do not offer
+                        refunds for that service. Because you gain immediate value from the information, you cannot
+                        “return” a prediction after it is provided. However, if you did not receive the prediction due
+                        to a technical error or were charged without receiving service, please contact us at {{
+                        support_email }} within {{ support_days }} so we can review the issue. In certain cases (e.g.,
+                        duplicate charges,
+                        service outages), we may, at our discretion, provide a refund or credit. (See our separate
+                        Refund Policy for more details.)
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                User Responsibilities and Acknowledgments
+            </div>
+            <div class="section-text">
+                <p>
+                    By using the Service, you acknowledge and agree that:
+                </p> <br>
+                <ul>
+                    <li>
+                        <b>Personal Decision-Making:</b> You are solely responsible for any investment decisions you
+                        make.
+                        {{ company_name }} and {{ application_name }} do not guarantee any outcome and are not liable
+                        for any
+                        losses or damages resulting from actions you take based on our predictions
+                    </li>
+
+                    <li>
+                        <b>Account Security:</b> You will maintain the confidentiality of your login credentials and
+                        notify us
+                        immediately of any unauthorized use. We are not liable for any loss due to compromised
+                        credentials if not caused by our negligence.
+                    </li>
+
+                    <li>
+                        <b>Accuracy of Information:</b> While we strive for accuracy, no prediction or data provided is
+                        guaranteed to be correct, current, or complete
+
+                    <li>
+                        Financial data and algorithms have limitations and may contain errors. Use your judgment and
+                        double-check critical information.
+                    </li>
+
+                    <li>
+                        <b>Compliance:</b> You will comply with all applicable laws and regulations when using the
+                        Service,
+                        including securities laws. You will not use the Service in a jurisdiction where such financial
+                        prediction services are illegal or require licensing that {{ company_name }} doesn’t possess.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Intellectual Property
+            </div>
+            <div class="section-text">
+                <p>
+                    All content and materials on {{ company_name }} (including software, algorithms, predictions, text,
+                    logos,
+                    and graphics) are owned by or licensed to blacjak.org. We grant you a limited, non-exclusive,
+                    non-transferable license to use the Service and view the predictions for your personal use. You must
+                    not copy, distribute, modify, or create derivative works from our content without our written
+                    permission. Any feedback or suggestions you provide to us regarding the Service may be used by us
+                    without obligation or compensation to you, and you hereby grant blacjak.org a worldwide,
+                    royalty-free license to use and incorporate feedback.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Privacy and Data
+            </div>
+            <div class="section-text">
+                <p>
+                    Your use of the Service is also governed by our Privacy Policy, which is incorporated by reference.
+                    We collect and use personal data as described in that policy (e.g., we may collect your email,
+                    device info, and usage data to operate and improve the Service). By using {{ application_name }},
+                    you consent to
+                    these data practices.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Disclaimers of Warranties
+            </div>
+            <div class="section-text">
+                <p>
+                    {{ application_name }} is provided on an "as-is" and "as-available" basis. {{ company_name }} makes
+                    no
+                    warranties or representations of any kind, express or implied, about the accuracy, reliability, or
+                    availability of the Service. We expressly disclaim any implied warranties of merchantability,
+                    fitness for a particular purpose, and non-infringement. We do not warrant that the Service will be
+                    error-free or that any investment outcome will be achieved. Use the Service at your own risk.
+
+                </p> <br>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Limitation of Liability
+            </div>
+            <div class="section-text">
+                <p>
+                    To the fullest extent permitted by law, {{ company_name }} will not be liable for any indirect,
+                    consequential, incidental, special, or punitive damages, or any loss of profits or revenue, whether
+                    incurred directly or indirectly, resulting from your use of or reliance on the Service. We are not
+                    liable for any losses
+                    or damages arising from any events beyond our control, or from any errors or omissions in the
+                    Service content.
+                </p> <br>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Indemnification
+            </div>
+            <div class="section-text">
+                <p>
+                    You agree to indemnify and hold harmless {{ company_name }}, its affiliates, officers, and
+                    employees from any claim or demand (including legal fees) made by any third party due to or arising
+                    out of your misuse of the Service, violation of these Terms, or infringement of any third-party
+                    rights.
+                </p> <br>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Termination
+            </div>
+            <div class="section-text">
+                <p>
+                    You may stop using the Service at any time. We reserve the right to terminate or suspend your
+                    account without notice if you violate these Terms or engage in prohibited conduct. Upon termination,
+                    your right to access the Service will cease immediately. Sections of these Terms that by their
+                    nature should survive termination (such as disclaimers, limitation of liability, etc.) will remain
+                    in effect.
+                </p> <br>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                Governing Law and Disputes
+            </div>
+            <div class="section-text">
+                <p>
+                    These Terms shall be governed by the laws of {{ country }}, without regard to its conflict of
+                    law principles. Any disputes arising from or relating to these Terms or the Service will be resolved
+                    through an agreed dispute resolution mechanism. By
+                    using the Service, you consent to the jurisdiction of such courts.
+                </p> <br>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Changes to These Terms
+            </div>
+            <div class="section-text">
+                <p>
+                    We may update or modify these Terms from time to time. If we make material changes, we will notify
+                    you by via email prior to the change becoming effective. The revised
+                    Terms will be effective upon posting (or the stated effective date). Your continued use of the
+                    Service after changes are posted constitutes acceptance of the revised Terms. We encourage you to
+                    review these Terms periodically.
+                </p> <br>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Contact Us
+            </div>
+            <div class="section-text">
+                <p>
+                    If you have questions or concerns about these Terms or the Service, you can contact us at:
+                    <br> Email: {{ email }}
+                </p> <br>
+                <p>We will do our best to address your inquiry promptly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

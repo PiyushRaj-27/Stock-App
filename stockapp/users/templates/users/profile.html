@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block extrahead %}
 {% load static %}
@@ -76,7 +76,7 @@
     </a>
 
     <a href="{% url 'dashboard' %}">
-        <div class="update">
+        <div class="update" id="dashboardbtn">
             Dashboard
         </div>
     </a>

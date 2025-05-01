@@ -1,3 +1,4 @@
+amqp==5.3.1
 asgiref==3.8.1
 astroid==3.3.8
 async-timeout==5.0.1
@@ -5,11 +6,17 @@ attrs==25.1.0
 autobahn==24.4.2
 Automat==24.8.1
 beautifulsoup4==4.13.3
+billiard==4.2.1
+celery==5.5.0
 certifi==2024.12.14
 cffi==1.17.1
 channels==4.2.0
 channels_redis==4.2.1
 charset-normalizer==3.4.0
+click==8.1.8
+click-didyoumean==0.3.1
+click-plugins==1.1.1
+click-repl==0.3.0
 colorama==0.4.6
 constantly==23.10.4
 cryptography==44.0.0
@@ -17,12 +24,15 @@ daphne==4.1.2
 dill==0.3.9
 Django==5.1.4
 django-allauth==65.3.0
+django-redis==5.4.0
 djangorestframework==3.15.2
+dotenv==0.9.9
 frozendict==2.4.6
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
 isort==5.13.2
+kombu==5.5.2
 mccabe==0.7.0
 msgpack==1.1.0
 multitasking==0.0.11
@@ -31,6 +41,7 @@ oauthlib==3.2.2
 pandas==2.2.3
 peewee==3.17.9
 platformdirs==4.3.6
+prompt_toolkit==3.0.50
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
@@ -51,7 +62,9 @@ tomlkit==0.13.2
 Twisted==24.11.0
 txaio==23.1.1
 typing_extensions==4.12.2
-tzdata==2024.2
+tzdata==2025.2
 urllib3==2.3.0
+vine==5.1.0
+wcwidth==0.2.13
 yfinance==0.2.54
 zope.interface==7.2
