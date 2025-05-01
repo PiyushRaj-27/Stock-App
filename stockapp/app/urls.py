@@ -16,14 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import dashboard, search, stock_dashboard, get_result, top_india_stock, get_hourly, get_prediction
+from .views import (dashboard, search,
+                     stock_dashboard,
+                    get_task_result, trigger_top_india_stock_task, trigger_get_hourly_task, trigger_get_prediction_task)
 urlpatterns = [
-
     path('dashboard/', dashboard, name="dashboard"),
     path('search/', search, name="search"),
-    path('top_stock/', top_india_stock, name="top_stock"),
-    path('infer/', get_result, name = "infer"),
+    path('top_stock/', trigger_top_india_stock_task, name="top_stock"),
+    path('infer/', get_task_result, name = "infer"),
     path('stock/<str:stockname>', stock_dashboard, name="stock"),
-    path("stock/hourly/<str:stockname>", get_hourly, name="hourly"),
-    path('stock/prediction/<str:stockname>', get_prediction, name="prediction")
+    path("stock/hourly/<str:stockname>", trigger_get_hourly_task, name="hourly"),
+    path('stock/prediction/<str:stockname>', trigger_get_prediction_task, name="prediction")
 ]

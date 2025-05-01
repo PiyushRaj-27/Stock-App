@@ -196,9 +196,7 @@
 
   
 @media only screen and (max-width: 700px) {
-    body{
-        overflow-y: hidden;
-    }
+
 
     .content{
         padding: 0rem;
@@ -263,4 +261,6 @@
     .predict-btn{
         width: 100%;
     }
+
+
 }

@@ -10,30 +10,44 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <title>{% block title %} {% endblock %}</title>
-
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     {% block extrahead %} {% endblock %}
 </head>
 <body>
     <!-- our header -->
     <div class="header">
-        <div class="title">Celestiya</div>
+        <div class="title" id="title">Celestiya</div>
 
-        <!-- <div class="searchbar">
-            <input type="text" placeholder="What are you looking for Today?" class="searchbar-input">
-        </div> -->
 
         {% if user.is_authenticated %}
             
 
             <div class="dropdown" contenteditable="false">
                 <div class="dropdown-cover"></div>
+                
                 <div class="dropdown-content">
+                    <div class="dropdown-item">
+                        <div class="dropdown-text">
+                            <a href="{% url 'profile'%}" style="color: white; font-size: 15px; justify-content: start;">
+                                Profile
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
+                        <div class="dropdown-text">
+                            <a href="{% url 'purchase'%}" style="color: white; font-size: 15px; justify-content: start;">
+                                Purchase Credits
+                            </a>
+                        </div>
+                    </div>
                     <div class="dropdown-item">
                         <form method="post" action="{% url 'account_logout' %}" >   
                             {% csrf_token %}
                             <button type="submit" class="logout-btn">Logout</button> 
                         </form>
                     </div>
+
+                    
                 </div>
                 
             </div>
@@ -61,18 +75,30 @@
                 <hr width="100%">
                 <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a> </div>
             </div>
-            <form method="post" action="{% provider_login_url "google" %}" class="google-login">
+            <!-- <form method="post" action="{% provider_login_url "google" %}" class="google-login">
                 {% csrf_token %}
                 <button type="submit" class="signInWithGoogle">Sign in with Google</button>
-            </form>
+            </form> -->
         </div>
     </div>
 
     
     {% block content %} {% endblock %}
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© {% now "Y" %} Celestiya. All rights reserved.</p>
+            <div class="footer-nav"><a href="{% url 'privacy_policy' %}"><div>Privacy Policy</div></a> <div>|</div> <a href="{% url 'tos' %}"><div>Terms of Service</div></a> <div>|</div> <a href="{% url 'refund_policy'%}"><div>Refund Policy</div></a></div>
+        </div>
+    </footer>
 </body>
 
 <script>
+    title = document.querySelector("#title");
+    title.addEventListener("click", ()=>{
+        window.location.href = "/"
+    })
+
     function onLoginClick(){
 
         modal = document.querySelector('.modalContainer');
@@ -112,8 +138,6 @@
         if(event.target.classList.contains('dropdown-cover') || event.target.classList.contains('dropdown-content')){
             return;
         }
-
-        console.log("click");
         cover = document.querySelector(".dropdown-cover");
         cover.style.display = "block";
 
