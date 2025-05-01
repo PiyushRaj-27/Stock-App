@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+<title>Profile</title>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="section">
+        <div class="circle"></div>
+        <fieldset class="main-item">
+            <legend>Name</legend>
+            <div class="main_item_text">
+                {{username}}
+            </div>
+        </fieldset>
+
+        <fieldset class="main-item">
+            <legend>Email</legend>
+            <div class="main_item_text">
+                <div>
+                    {{usermail}}
+                </div>
+
+                <a href="{% url 'account_email' %}" class="aleft">
+                    <div class="change"> Change </div>
+                </a>
+
+            </div>
+        </fieldset>
+
+        <fieldset class="main-item">
+            <legend>Credits</legend>
+            <div class="main_item_text">
+                <div>
+                    {{credit}}
+                </div>
+
+
+            </div>
+        </fieldset>
+
+
+        <fieldset class="main-item">
+            <legend>Gender</legend>
+            <div class="main_item_text">
+                <div>
+                    {{gender}}
+                </div>
+
+            </div>
+        </fieldset>
+
+        {% if nocustomer %}
+        <div class="info">
+            Please Update your profile to complete registration and start using our Application!
+        </div>
+        {% endif %}
+    </div>
+
+
+    <a href="{% url 'user_update_profile' %}">
+        <div class="update">
+            Update Profile
+        </div>
+    </a>
+
+    <a href="{% url 'account_change_password' %}">
+        <div class="update red" style="color: #c80101;">
+            Change Password
+        </div>
+    </a>
+
+    <a href="{% url 'dashboard' %}">
+        <div class="update" id="dashboardbtn">
+            Dashboard
+        </div>
+    </a>
+
+</div>
+
+
+{% endblock %}
