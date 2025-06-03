@@ -31,7 +31,7 @@
             International Stock Exchange
         </div>
         <div class="stock-container">
-            {% for labels, data, name, real in data %}
+            {% for labels, data, name, real, currency in data %}
             <div class="stock-card" id="stock-{{ name }}">
 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -58,6 +58,13 @@
 
     <div class="container">
         <div class="container-title">National Stock Exchange</div>
+        <div class="loader" id="loader">
+            <div class="loader-spinner">
+                <div class="loader-spinner-mini">
+                
+            </div>
+            </div>
+        </div>
         <div class="stock-container span-height" id="nseCont">
         </div>
     </div>
@@ -184,7 +191,7 @@
                 clearInterval(interval);
                 callback(data.result);
             }
-        }, 2000); // poll every 1 second
+        }, 2000);
     }
 
 
@@ -193,7 +200,7 @@
 
         await pollResult(task_id, (response) => {
 
-            console.log(response);
+            document.getElementById("loader").style.display = "none";
             const nseCont = document.getElementById("nseCont");
             nseCont.innerHTML = ''; // Clear previous cards
             for (const key in response) {

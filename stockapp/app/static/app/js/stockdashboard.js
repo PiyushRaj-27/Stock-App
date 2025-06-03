@@ -2,30 +2,24 @@
 const stockName = JSON.parse(document.getElementById('stock_name').textContent);
 let stockData = null;
 let chart = null;
-
-
-
-// optinal websocket code
-
-//const Socket = new WebSocket(
-//     'ws://'
-//     + window.location.host
-//     + '/ws/stock/'
-//     + stockName
-//     + '/'
-// );
-
-// Socket.onmessage = function (e) {
-//     const data = JSON.parse(e.data);
-//     console.log(data)
-//     document.getElementById("socket-data").innerText = `${data.stock} ${data.last_price}`
-// };
-
-
-
+let globalCurrency = null;
 
 
 // utility functions
+
+function showError(message) {
+    const popup = document.createElement('div');
+    popup.classList.add('popup');
+    popup.innerText = message;
+
+    document.body.appendChild(popup);
+    setTimeout(() => popup.classList.add('show'), 100); // Small delay for smooth fade-in
+
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 300); // Allow fade-out before removal
+    }, 10000); // 10 seconds
+  }
 
 async function get_hourly_stocks_task_id() {
     try {
@@ -48,6 +42,7 @@ async function pollResult(taskId, callback) {
         const data = await response.json();
 
         if (data.status === 'SUCCESS') {
+            // console.log(data.result);
             callback(data.result);
             return;
         }
@@ -68,6 +63,7 @@ async function pollResult(taskId, callback) {
 
             if (data.status === 'SUCCESS') {
                 clearInterval(interval);
+                // console.log(data.result);
                 callback(data.result);
             }
         }, 2000); // poll every 1 second
@@ -87,15 +83,29 @@ async function get_hourly_stock_data() {
     const task_id = await get_hourly_stocks_task_id();
     await pollResult(task_id, (response) => {
         stockData = response;
-        appendPrices(stockData);
-        renderStockGraph(response, stockName);
+        appendPrices(stockData.data, stockData.metadata.currency, stockData.metadata.volume);
+        renderStockGraph(response.data, stockName);
+        closeOrOpen(stockData.metadata.status);
     })
 }
 
 get_hourly_stock_data();
 
+function closeOrOpen(status){
+    console.log(status);
+    if (status === "CLOSED"){
+        document.getElementById("closedTag").style.display = "block";
+    }
+    else{
+        document.getElementById("openTag").style.display = "block";
+    }
+}
+
 // adds DOM element for prices
-function appendPrices(data) {
+function appendPrices(data, currency, volume) {
+    if(currency){
+        globalCurrency = currency;
+    }
     data = JSON.parse(data);
     const Close = data.Close;
     const CloseKey = Object.keys(Close);
@@ -113,7 +123,14 @@ function appendPrices(data) {
     const diffIndicator = document.createElement("div");
     diffIndicator.classList.add(diff < 0 ? "low-price" : "high-price");
     diffIndicator.innerText = (diff > 0 ? `+ ${(diff).toFixed(2)}` : `- ${(diff).toFixed(2)}`);
-    closeNumeric.innerText = (lastClose).toFixed(2);
+
+    if(currency){
+
+        closeNumeric.innerText = ` ${currency} ${(lastClose).toFixed(2)}`;
+    }
+    else{
+        closeNumeric.innerText = `${(lastClose).toFixed(2)}`
+    }
     // closeNumeric.appendChild(diffIndicator);
 
 
@@ -124,7 +141,7 @@ function appendPrices(data) {
     const lowest = Math.min(...Object.values(Low));
     const highest = Math.max(...Object.values(High));
 
-    const datas = { "Open": firstOpen, "High": highest, "Low": lowest, "Volume": -1, "MKT CAP": -1, "P/E": -1, "Yield": -1, "Beta": -1 };
+    const datas = { "Open": firstOpen, "High": highest, "Low": lowest, "Volume": -1 };
     const datacard = document.getElementById("datacard");
     for (const key in datas) {
         const dataDiv = document.createElement("div");
@@ -134,10 +151,16 @@ function appendPrices(data) {
         dataKey.classList.add("data-key");
 
         const dataValue = document.createElement("div");
+        dataValue.classList.add(`data-${key}`);
         dataValue.classList.add("data-value");
 
         dataKey.innerText = key;
-        dataValue.innerText = (datas[key]).toFixed(2);
+        if(key !== 'Volume'){
+            dataValue.innerText = `${currency} ${(datas[key]).toFixed(2)}`;
+        }
+        else{
+            dataValue.innerText = (volume).toFixed(2);
+        }
 
         dataDiv.appendChild(dataKey);
         dataDiv.appendChild(dataValue);
@@ -167,20 +190,22 @@ function renderStockGraph(stockData, stockName) {
 
         if (last > first) {
             // Green gradient
-            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient = ctx.createLinearGradient(0, 0, 0, 400);
             gradient.addColorStop(0, "rgba(28, 164, 76, 0.5)");
+            gradient.addColorStop(0.8, "rgba(28, 164, 76, 0.25)");
             gradient.addColorStop(1, "rgba(28, 164, 76, 0)");
             bcolor = "rgba(28,164,76,1)";
         } else {
             // Red gradient
-            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient = ctx.createLinearGradient(0, 0, 0, 400);
             gradient.addColorStop(0, "rgba(209, 52, 52, 0.5)");
+            gradient.addColorStop(0.8, "rgba(209, 52, 52, 0.25)");
             gradient.addColorStop(1, "rgba(209, 52, 52, 0)");
             bcolor = "rgba(209, 52, 52,1)";
         }
     } else {
         // Purple gradient fallback
-        gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, "rgba(25, 11, 34, 0)");
         gradient.addColorStop(1, "rgba(18, 12, 22, 1)");
         bcolor = "#6a1ed3";
@@ -348,113 +373,158 @@ function renderStockChart(stockData, stockName) {
 
 
 function addPredictionToChart(predictionDataObj) {
-
-    if (!chart) {
-        console.error("Chart object is not available. Cannot add prediction.");
-        return;
-    }
-    const ctx = chart.ctx;
-    if (!ctx) {
-        console.error("Could not get rendering context (chart.ctx). Cannot create gradient.");
-        return;
-    }
-    if (!chart.data || !chart.data.labels || !chart.data.datasets || chart.data.datasets.length === 0 || chart.data.labels.length === 0) {
-        console.error("Chart data structure seems incomplete or empty. Cannot add prediction.");
-        return;
-    }
-    if (chart.data.datasets[0].data.length !== chart.data.labels.length) {
-        console.error("Chart labels and data points count mismatch. Cannot reliably add prediction.");
+    if (!chart || !chart.ctx) {
+        console.error("Chart or its rendering context is not available.");
         return;
     }
 
-    const predictionResult = predictionDataObj;
+    const { high, low, sentiment, closingRange } = predictionDataObj || {};
 
-    if (!predictionResult || typeof predictionResult.data !== 'string' || predictionResult.success !== 'True') {
-        console.error(`Prediction data object format invalid or success is not 'True'. Received:`, predictionResult);
+    // Validate new data structure
+    if (
+        typeof high !== 'number' || typeof low !== 'number' ||
+        typeof sentiment !== 'string' || // Added sentiment check
+        !closingRange || typeof closingRange.start !== 'number' || typeof closingRange.end !== 'number'
+    ) {
+        console.error("Prediction data format is invalid:", predictionDataObj);
         return;
     }
 
-    const predictedPrice = parseFloat(predictionResult.data);
-    if (isNaN(predictedPrice)) {
-        console.error(`Predicted price is not a valid number: '${predictionResult.data}'`);
-        return;
-    }
     const lastLabelIndex = chart.data.labels.length - 1;
+    if (lastLabelIndex < 0) {
+        console.error("Chart has no data/labels to base prediction on.");
+        return;
+    }
     let lastLabel = chart.data.labels[lastLabelIndex];
-    const lastPrice = chart.data.datasets[0].data[lastLabelIndex];
 
-    if (typeof lastPrice !== 'number' || isNaN(lastPrice)) {
-        console.error(`Last historical price is not a valid number: '${lastPrice}'. Cannot determine prediction color/gradient.`);
+    // Ensure lastPrice is valid and from the primary dataset (usually the first one)
+    const primaryDataset = chart.data.datasets[0];
+    if (!primaryDataset || !primaryDataset.data || primaryDataset.data.length === 0) {
+        console.error("Primary dataset is missing or empty.");
+        return;
+    }
+    const lastPrice = primaryDataset.data[lastLabelIndex];
+
+    if (typeof lastPrice !== 'number') {
+        console.error("Last price from primary dataset is invalid:", lastPrice, "at index", lastLabelIndex);
         return;
     }
 
-    if (!(lastLabel instanceof Date)) {
-        console.warn("The last label in the chart is not a Date object. Attempting to parse.", "Label:", lastLabel);
-        const timestamp = Date.parse(lastLabel);
-        if (isNaN(timestamp)) {
-            console.error("Could not interpret the last label as a valid date/time.");
+    // Date handling for the next prediction point
+    let lastLabelDate;
+    if (lastLabel instanceof Date) {
+        lastLabelDate = lastLabel;
+    } else {
+        const parsedDate = Date.parse(lastLabel);
+        if (isNaN(parsedDate)) {
+            console.error("Last label could not be parsed as Date:", lastLabel);
             return;
         }
-        lastLabel = new Date(timestamp);
+        lastLabelDate = new Date(parsedDate);
     }
 
-    const nextDayDate = new Date(lastLabel);
+    const nextDayDate = new Date(lastLabelDate);
     nextDayDate.setDate(nextDayDate.getDate() + 1);
 
-    let predictionLineColor;
-    let predictionPointColor;
-    let predictionGradient;
-
-    predictionGradient = ctx.createLinearGradient(0, 0, 0, 300);
-
-    if (predictedPrice > lastPrice) {
-        predictionLineColor = 'rgba(28, 164, 76, 1)';
-        predictionPointColor = 'rgba(28, 164, 76, 1)';
-
-        predictionGradient.addColorStop(0, "rgba(28, 164, 76, 0.5)"); 
-        predictionGradient.addColorStop(1, "rgba(28, 164, 76, 0)");   
-    } else if (predictedPrice < lastPrice) {
-
-        predictionLineColor = 'rgba(209, 52, 52, 1)';
-        predictionPointColor = 'rgba(209, 52, 52, 1)';
-
-        predictionGradient.addColorStop(0, "rgba(209, 52, 52, 0.5)"); 
-        predictionGradient.addColorStop(1, "rgba(209, 52, 52, 0)");   
+    // Color based on sentiment
+    let color;
+    if (sentiment === 'positive') {
+        color = 'rgba(28, 164, 76, 1)'; // Green
+    } else if (sentiment === 'negative') {
+        color = 'rgba(209, 52, 52, 1)'; // Red
     } else {
-
-        predictionLineColor = 'rgb(255, 205, 86)';
-        predictionPointColor = 'rgb(255, 205, 86)';
-        predictionGradient.addColorStop(0, "rgba(255, 205, 86, 0.5)"); 
-        predictionGradient.addColorStop(1, "rgba(255, 205, 86, 0)");  
+        color = 'rgba(255, 205, 86, 1)'; // Yellow for neutral or other
     }
 
-
-    const predictionDataset = {
-        label: 'Prediction',
-        data: [],
-        borderColor: predictionLineColor,
-        pointBackgroundColor: predictionPointColor,
-        pointBorderColor: 'white',
-        fill: true,                      
-        backgroundColor: predictionGradient,
-
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        tension: 0.1 
+    // Helper function to create data array for a prediction line
+    // It connects the last known price to the predicted value
+    const createPredictionDataArray = (predictedValue) => {
+        const data = Array(chart.data.labels.length + 1).fill(null); // +1 for the new date
+        data[lastLabelIndex] = lastPrice; // Point from last actual price
+        data[chart.data.labels.length] = predictedValue; // Predicted value at new date index
+        return data;
     };
 
-    predictionDataset.data = chart.data.labels.map(() => null);
-    predictionDataset.data[lastLabelIndex] = lastPrice;
-    predictionDataset.data.push(predictedPrice);
+    // --- Create new datasets for the prediction ---
 
+    // High Prediction Line
+    const highDataset = {
+        label: 'Prediction: High',
+        data: createPredictionDataArray(high),
+        borderColor: color,
+        backgroundColor: 'rgba(0,0,0,0)', // Transparent fill
+        pointRadius: 4,
+        pointBackgroundColor: color,
+        borderWidth: 2,
+        fill: false,
+        tension: 0 // Straight line
+    };
 
+    // Low Prediction Line
+    const lowDataset = {
+        label: 'Prediction: Low',
+        data: createPredictionDataArray(low),
+        borderColor: color,
+        backgroundColor: 'rgba(0,0,0,0)',
+        pointRadius: 4,
+        pointBackgroundColor: color,
+        borderWidth: 2,
+        fill: false,
+        tension: 0
+    };
+
+    // Closing Range Start Line (dashed)
+    const closingStartDataset = {
+        label: 'Prediction: Closing Start',
+        data: createPredictionDataArray(closingRange.start),
+        borderColor: color,
+        borderDash: [4, 4], // Dashed line
+        backgroundColor: 'rgba(0,0,0,0)',
+        pointRadius: 3,
+        pointStyle: 'rect', // Different point style
+        pointBackgroundColor: color,
+        borderWidth: 1.5,
+        fill: false,
+        tension: 0
+    };
+
+    // Closing Range End Line (dashed)
+    const closingEndDataset = {
+        label: 'Prediction: Closing End',
+        data: createPredictionDataArray(closingRange.end),
+        borderColor: color,
+        borderDash: [4, 4], // Dashed line
+        backgroundColor: 'rgba(0,0,0,0)',
+        pointRadius: 3,
+        pointStyle: 'rect',
+        pointBackgroundColor: color,
+        borderWidth: 1.5,
+        fill: false,
+        tension: 0
+    };
+
+    // --- Update chart data ---
+
+    // 1. Add the new label (for the next day)
     chart.data.labels.push(nextDayDate);
-    chart.data.datasets.push(predictionDataset);
 
+    // 2. Pad existing datasets with a null for the new label
+    // This ensures existing lines don't try to connect to an undefined point
+    chart.data.datasets.forEach(dataset => {
+        // Only pad if it's shorter than the new labels length
+        // This check is important because createPredictionDataArray already made arrays of the new correct length
+        if (dataset.data.length < chart.data.labels.length) {
+            dataset.data.push(null);
+        }
+    });
+
+    // 3. Add the new prediction datasets
+    chart.data.datasets.push(highDataset, lowDataset, closingStartDataset, closingEndDataset);
+
+    // 4. Update the chart
     chart.update();
 
+    console.log("Prediction added to chart:", predictionDataObj);
 }
 
 
@@ -472,6 +542,51 @@ async function getPredictionToken() {
 
 }
 
+
+
+function addPredictionToDataCard(data){
+    const datacard = document.getElementById("datacard");
+
+    Object.keys(data).forEach((key)=>{
+        const dataItem = document.createElement("div");
+        const dataKey = document.createElement("div");
+        const dataVal = document.createElement("div");
+
+        dataItem.classList.add("data");
+        dataItem.classList.add("predictedData");
+        dataKey.classList.add("data-key");
+        dataKey.classList.add(`data-key-${key}`);
+        dataVal.classList.add("data-value");
+        dataVal.classList.add(`data-val-${key}`);
+
+        dataKey.innerHTML = "Predicted " + key;
+        if(key === "closingRange"){
+
+            if(globalCurrency){
+                dataVal.innerHTML = `${globalCurrency} ${data[key]["start"]} - ${globalCurrency} ${data[key]["end"]}`;
+            }
+            else{
+                dataVal.innerHTML = `${data[key]["start"]} - ${data[key]["end"]}`;
+            }
+        }
+        else if(key==="sentiment"){
+            dataVal.innerHTML = data[key];
+        }
+        else{
+            if(globalCurrency){
+                dataVal.innerHTML = `${globalCurrency} ${data[key]}`;
+            }
+            else{
+                dataVal.innerHTML = data[key];
+            }
+        }
+        dataItem.appendChild(dataKey);
+        dataItem.appendChild(dataVal);
+
+        datacard.appendChild(dataItem);
+    });
+}
+
 async function getPrediction() {
     let token;
     try {
@@ -485,10 +600,20 @@ async function getPrediction() {
     if (token) {
         await pollResult(token,
             (response) => { // Success Callback for pollResult
+                console.log(response);
                 try {
-                    addPredictionToChart(response);
+                    if("success" in response && !response["success"]){
+                        showError(response.message);
+                    }
+                    else{
+                        const res = response["result"];
+                        // const parsedData = parseStockData(res);
+                        console.log(res);
+                        addPredictionToChart(res);
+                        addPredictionToDataCard(res);
+                    }
                 } catch (error) {
-                    console.error("Error occurred inside addPredictionToChart:", error);
+                    console.error("Error occurred inside getPrediction:", error);
                 }
             },
             (error) => {

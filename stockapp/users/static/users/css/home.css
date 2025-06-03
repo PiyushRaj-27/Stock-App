@@ -61,5 +61,14 @@
 @media screen and (max-width: 1000px) {
     .major{
         text-align: center;
+        font-size: 25px;
+    }
+
+    .minor{
+        font-size: 15px;
+    }
+
+    .centre{
+        gap:10px
     }
 }

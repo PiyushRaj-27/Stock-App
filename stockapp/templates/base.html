@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load socialaccount %}
     <meta charset="UTF-8">
@@ -13,46 +14,58 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     {% block extrahead %} {% endblock %}
 </head>
+
 <body>
     <!-- our header -->
     <div class="header">
-        <div class="title" id="title">Celestiya</div>
+        <div class="title" id="title"> BlacJak</div>
 
 
         {% if user.is_authenticated %}
-            
 
-            <div class="dropdown" contenteditable="false">
-                <div class="dropdown-cover"></div>
-                
-                <div class="dropdown-content">
-                    <div class="dropdown-item">
-                        <div class="dropdown-text">
-                            <a href="{% url 'profile'%}" style="color: white; font-size: 15px; justify-content: start;">
-                                Profile
-                            </a>
-                        </div>
-                    </div>
-                    <div class="dropdown-item">
-                        <div class="dropdown-text">
-                            <a href="{% url 'purchase'%}" style="color: white; font-size: 15px; justify-content: start;">
-                                Purchase Credits
-                            </a>
-                        </div>
-                    </div>
-                    <div class="dropdown-item">
-                        <form method="post" action="{% url 'account_logout' %}" >   
-                            {% csrf_token %}
-                            <button type="submit" class="logout-btn">Logout</button> 
-                        </form>
-                    </div>
 
-                    
-                </div>
-                
+        <div class="dropdown" contenteditable="false">
+            <img src="{% static 'images/account_circle.svg' %}" width="30px">
+            <div class="dropdown-cover">
             </div>
+
+            <div class="dropdown-content">
+                <div class="dropdown-item">
+                    <div class="dropdown-text">
+                        <a href="{% url 'profile'%}" style="color: white; font-size: 15px; justify-content: start;">
+                            Profile
+                        </a>
+                    </div>
+                </div>
+                <div class="dropdown-item">
+                    <div class="dropdown-text">
+                        <a href="{% url 'purchase'%}" style="color: white; font-size: 15px; justify-content: start;">
+                            Purchase Credits
+                        </a>
+                    </div>
+                </div>
+                <div class="dropdown-item">
+                    <form method="post" action="{% url 'account_logout' %}" style="    
+    /* padding: 10px; */
+    margin: 0px;
+    text-align: start;
+    align-items: start;
+    justify-content: start;
+    display: block;
+    ">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn" style="
+    width: 100%;
+    padding: 10px 20px 10px 20px; text-align: start;">Logout</button>
+                    </form>
+                </div>
+
+
+            </div>
+
+        </div>
         {% else %}
-            <div class="login-btn" >Login</div>
+        <div class="login-btn">Login</div>
         {% endif %}
 
     </div>
@@ -63,17 +76,20 @@
                 <div class="modalTitle">Login</div>
             </div>
             <div class="modalBody">
-                <form action="{% url 'account_login' %}" method="post"> 
+                <form action="{% url 'account_login' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
-                        <input type="text" name="login" id="email" class="form-control" required placeholder="Username" autocomplete="username"> 
-                        
-                        <input type="password" name="password" id="password" class="form-control" required placeholder="Password" autocomplete="current-password">
+                        <input type="text" name="login" id="email" class="form-control" required placeholder="Username"
+                            autocomplete="username">
+
+                        <input type="password" name="password" id="password" class="form-control" required
+                            placeholder="Password" autocomplete="current-password">
                         <button type="submit" class="submit-btn">Login</button>
                     </div>
                 </form>
                 <hr width="100%">
-                <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a> </div>
+                <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a>
+                </div>
             </div>
             <!-- <form method="post" action="{% provider_login_url "google" %}" class="google-login">
                 {% csrf_token %}
@@ -82,24 +98,33 @@
         </div>
     </div>
 
-    
+
     {% block content %} {% endblock %}
 
     <footer class="footer">
         <div class="footer-content">
-            <p>© {% now "Y" %} Celestiya. All rights reserved.</p>
-            <div class="footer-nav"><a href="{% url 'privacy_policy' %}"><div>Privacy Policy</div></a> <div>|</div> <a href="{% url 'tos' %}"><div>Terms of Service</div></a> <div>|</div> <a href="{% url 'refund_policy'%}"><div>Refund Policy</div></a></div>
+            <p>© {% now "Y" %} BlacJak. All rights reserved.</p>
+            <div class="footer-nav"><a href="{% url 'privacy_policy' %}">
+                    <div>Privacy Policy</div>
+                </a>
+                <div>|</div> <a href="{% url 'tos' %}">
+                    <div>Terms of Service</div>
+                </a>
+                <div>|</div> <a href="{% url 'refund_policy'%}">
+                    <div>Refund Policy</div>
+                </a>
+            </div>
         </div>
     </footer>
 </body>
 
 <script>
     title = document.querySelector("#title");
-    title.addEventListener("click", ()=>{
+    title.addEventListener("click", () => {
         window.location.href = "/"
     })
 
-    function onLoginClick(){
+    function onLoginClick() {
 
         modal = document.querySelector('.modalContainer');
         modal.style.display = 'flex';
@@ -107,24 +132,24 @@
 
     }
 
-    function onContainerClick(event){
-        if(event.target.classList.contains('modalContainer')){
+    function onContainerClick(event) {
+        if (event.target.classList.contains('modalContainer')) {
             modal = document.querySelector('.modalContainer');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
-            
+
         }
     }
 
     try {
         document.querySelector('.login-btn').addEventListener('click', onLoginClick);
         document.querySelector('.modalContainer').addEventListener('click', onContainerClick);
-        
-    } catch (error) {  
+
+    } catch (error) {
     }
-   
-    function onDropdownContainerClick(event){
-        if(event.target.classList.contains('dropdown-content')){
+
+    function onDropdownContainerClick(event) {
+        if (event.target.classList.contains('dropdown-content')) {
             return;
         }
         cover = document.querySelector(".dropdown-cover");
@@ -134,8 +159,8 @@
         content.style.display = "none";
     }
 
-    function onDropdownClick(event){
-        if(event.target.classList.contains('dropdown-cover') || event.target.classList.contains('dropdown-content')){
+    function onDropdownClick(event) {
+        if (event.target.classList.contains('dropdown-cover') || event.target.classList.contains('dropdown-content')) {
             return;
         }
         cover = document.querySelector(".dropdown-cover");
@@ -145,9 +170,10 @@
         content.style.display = "flex";
     }
     document.querySelector(".dropdown").addEventListener('click', onDropdownClick);
-    document.querySelector(".dropdown-cover").addEventListener('click',onDropdownContainerClick);
-    
+    document.querySelector(".dropdown-cover").addEventListener('click', onDropdownContainerClick);
+
 </script>
 {% block extrascript %}
-    {% endblock %}
+{% endblock %}
+
 </html>

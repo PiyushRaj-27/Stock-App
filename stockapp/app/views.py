@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from celery.result import AsyncResult
 from celery.exceptions import CeleryError
-from .utilities import get_stock_1hr, get_top_stock_india, utility_get_quaterly, make_prediction
-
+from .utilities import get_stock_1hr, get_top_stock_india, utility_get_quaterly, make_prediction, get_currency_stock
+from django.contrib.auth.models import User
 # logging configurations
 logger = logging.getLogger(__name__)
 
@@ -38,8 +38,9 @@ def dashboard(request):
     data_list = []
     names = []
     real = []
+    currency = []
     realname = {"GOOGL": "Google", "MSFT": "Microsoft", "TSLA": "Tesla", "NVDA": "Nvidia"}
-    for stock in ("GOOGL", "MSFT", "TSLA", "NVDA"):
+    for stock in FRONT_STOCKS:
         try:
             temp = get_stock_1hr(stock, 5)
             labels = temp.index.strftime('%H').tolist()
@@ -48,10 +49,10 @@ def dashboard(request):
             data_list.append(data[:])
             names.append(stock)
             real.append(realname[stock])
-
+            currency.append(get_currency_stock(stock))
         except Exception:
             continue
-    data = list(map(list, list(zip(labels_list, data_list, names, real))))
+    data = list(map(list, list(zip(labels_list, data_list, names, real, currency))))
     return render(request, "app/dashboard.html",{"data":data})
 
 
@@ -159,7 +160,7 @@ def get_task_result(request):
 
     except Exception as e:
         logger.error("Exception while initating Celery task: with message: %s", e)
-        return JsonResponse({"task_id": "-1", "success": False})
+        return JsonResponse({'status': "FAILURE", 'result': None})
 
 @login_required(login_url="/accounts/login")
 def trigger_get_hourly_task(request, stockname):
@@ -200,7 +201,7 @@ def trigger_get_prediction_task(request, stockname):
         return JsonResponse({"task_id": "-1", "success": False})
 
     try:
-        prediction_task = make_prediction.delay(stockname)
+        prediction_task = make_prediction.delay(stockname, request.user.email)
         return JsonResponse({'task_id': prediction_task.id, "success": True})
 
     except CeleryError as e:

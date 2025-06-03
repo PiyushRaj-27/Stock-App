@@ -25,23 +25,16 @@
         <div class="stockcard" id="stock-{{ stock_name }}">
             <div class="stockdetails">
                 <div class="stockcardtitle">{{ stock_name }}</div>
-
-                <div id="toggler">
-                    Line &ThickSpace;
-                    <label class="switch">
-                        <input type="checkbox" id="toggleSwitch">
-                        <span class="slider round"></span>
-                    </label>
-                    &ThickSpace; Candles
-                </div>
+                <div class="closedTag" id="closedTag">Closed</div> <div class="openTag" id="openTag">Open</div>
             </div>
+            
             <hr class="hrrule">
             <div class="stocknumerics">
                 <div class="numerics">
                     <div class="numeric" id="price-{{stock_name}}-close">
                         <!-- 22,904.45 <div class="high-price">-345.65</div> -->
                     </div>
-                    <div class="numeric-dull">At Close</div>
+                    <div class="numeric-dull">Current Price</div>
                 </div>
 
             </div>

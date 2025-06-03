@@ -31,29 +31,75 @@
     align-items: center;
     justify-content: space-evenly;
     width: 90%;
-    gap: 4rem;
+    gap: 1rem;
 }
+
+.price-card-wrapper {
+    width: 30%;
+    padding: 2px;
+    /* background-color: white; */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gradient1 {
+    background: #ffffff;
+    background: linear-gradient(220deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+}
+
+.gradient2 {
+    background: #ffffff;
+    background: linear-gradient(180deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+}
+
+.gradient3 {
+    background: #ffffff;
+    background: linear-gradient(140deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+}
+
+.gradient-card-1 {
+    background: #303030;
+    background: radial-gradient(circle at 95% 0%, rgb(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+}
+
+
+.gradient-card-2 {
+    background: #303030;
+    background: radial-gradient(circle at 50% 0%, rgba(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+}
+
+
+.gradient-card-3 {
+    background: #303030;
+    background: radial-gradient(circle at 5% 0%, rgba(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+}
+
 
 .price-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    gap: 2rem;
-    width: 30%;
+    /* gap: 2rem; */
+    width: 100%;
     padding: 2rem;
-    background-color: var(--bgshade4);
-    border: 0.5px solid var(--border);
+    background-color: var(--bgshade2);
+    /* border: 0.5px solid var(--border); */
     border-radius: 8px;
     transition: 0.1s ease-in-out;
     height: auto;
-    min-height: 80vh;
+    min-height: 525px;
     padding-top: 0.2rem;
+    z-index: 100;
 }
+
+
 
 .price-card:hover {
     transform: scale(1.02);
-    box-shadow: -5px -5px 50px salmon, 5px 5px 50px rgb(118, 10, 219);
+    box-shadow: -5px -5px 40px salmon, 5px 5px 40px rgb(118, 10, 219);
 }
 
 .price-info {
@@ -67,9 +113,9 @@
 }
 
 .price-name {
-    font-size: 20px;
-    color: var(--bgtext);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 25px;
+    color: var(--bgtext3);
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: bolder;
 }
 
@@ -84,6 +130,7 @@
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
+
 .diagonal-strike {
     position: relative;
     display: inline-block;
@@ -92,22 +139,25 @@
     font-size: 33px;
     /* transform: translateY(20%); */
     color: var(--bgtext3);
-  }
+}
 
-  .diagonal-strike::before {
+.diagonal-strike::before {
     content: "";
     position: absolute;
     top: 50%;
     left: 0;
-    width: 100%; /* Increase width to cover diagonal */
+    width: 100%;
+    /* Increase width to cover diagonal */
     height: 2px;
     background-color: var(--button);
-    transform: rotate(-20deg); /* Adjust angle as needed */
+    transform: rotate(-20deg);
+    /* Adjust angle as needed */
     transform-origin: center;
-  }
+}
+
 .price {
-    font-size: 40px;
-    color: var(--bgtext);
+    font-size: 45px;
+    color: var(--bgtext3);
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bolder;
 }
@@ -116,7 +166,7 @@
     width: 100%;
     padding: 1rem;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: var(--bgtext2);
+    color: var(--bgtext3);
     text-align: center;
     gap: 1rem;
     display: flex;
@@ -151,25 +201,80 @@ ul li::marker {
     font-size: 15px;
 }
 
-@media only screen and (max-width: 700px){
-    .price-container{
+@media only screen and (max-width: 700px) {
+    .price-card-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .price-container {
         width: 100%;
         padding: 2rem;
         padding-top: 4rem;
     }
-    .price-title{
+
+    .price-title {
         font-size: 25px;
         text-align: center;
     }
 
-    .price-card-container{
+    .price-card-container {
         flex-direction: column;
         width: 100%;
     }
 
-    .price-card{
-        width: 95%;
-        min-height: 80vh;
-        max-height: 50vh;
+    .price-card {
+        width: 100%;
+        height: 400px;
     }
+
+
+    .gradient1 {
+        background: #ffffff;
+        background: linear-gradient(180deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+    }
+
+    .gradient2 {
+        background: #ffffff;
+        background: linear-gradient(180deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+    }
+
+    .gradient3 {
+        background: #ffffff;
+        background: linear-gradient(180deg, rgb(188, 188, 188) 0%, var(--border) 20%, var(--border-transparent) 85%);
+    }
+
+    .gradient-card-1 {
+        background: #303030;
+        background: radial-gradient(circle at 50% 0%, rgb(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+    }
+
+
+    .gradient-card-2 {
+        background: #303030;
+        background: radial-gradient(circle at 50% 0%, rgba(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+    }
+
+
+    .gradient-card-3 {
+        background: #303030;
+        background: radial-gradient(circle at 50% 0%, rgba(39, 39, 39) 0%, var(--bgshade5) 40%, var(--bgshade5) 100%);
+    }
+
+}
+
+.productLink {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature {
+    font-size: 15px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    color: var(--bgtext3);
 }

@@ -273,7 +273,45 @@
 
 }
 
-@media only screen and (max-width: 700px) {
+.loader{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-spinner-mini{
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    border-top: 5px solid var(--loader);
+    animation: loaderAnim 2s linear infinite;
+}
+
+.loader-spinner{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border-top: 5px solid var(--loader);
+    animation: loaderAnim 1s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+@keyframes loaderAnim {
+    0%{
+        transform: rotateZ(0deg);
+    }
+
+    100%{
+        transform: rotateZ(360deg);
+    }
+}
+
+@media only screen and (max-width: 1000px) {
     .warning{
         font-size: 11px;
         margin-top: 4rem;
@@ -400,7 +438,7 @@
     }
     .span-height{
         height: auto;
-        min-height: 60vh;
+        /* min-height: 60vh; */
     }
     .stock-card{
         width: 100%;
@@ -461,4 +499,20 @@
         font-size: 11px;
         color: white;
     }
+
+    .loader{
+        margin-top: 10px;
+    }
+    .loader-spinner{
+        width: 50px;
+        height: 50px;
+        border-top: 2px solid var(--loader) ;
+    }
+
+    .loader-spinner-mini{
+        width: 40px;
+        height: 40px;
+         border-top: 2px solid var(--loader) ;
+    }
+
   }
