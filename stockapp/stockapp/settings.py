@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # deployment changes
-# ALLOWED_HOSTS = ["13.112.219.44",'blacjak.org','www.blacjak.org', '*'] # deployment changes
-ALLOWED_HOSTS = ['f4da-49-47-131-177.ngrok-free.app','*'] # deployment changes
-CSRF_TRUSTED_ORIGINS = ['https://30f3-49-47-131-177.ngrok-free.app']
+DEBUG = False # deployment changes
+ALLOWED_HOSTS = ["13.112.219.44",'blacjak.org','www.blacjak.org', 'dblacs.in', 'www.dblacs.in'] # deployment changes
+# ALLOWED_HOSTS = ['f4da-49-47-131-177.ngrok-free.app','*'] # deployment changes
+# CSRF_TRUSTED_ORIGINS = ['https://30f3-49-47-131-177.ngrok-free.app']
 
 # Application definition
 
@@ -82,18 +82,18 @@ WSGI_APPLICATION = 'stockapp.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'USER': os.getenv('DB_USER'),
-    #     'PASSWORD': os.getenv('DB_PASSWORD'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'PORT': os.getenv('DB_PORT')
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # or os.path.join(BASE_DIR, 'db.sqlite3') for the default path
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT')
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # or os.path.join(BASE_DIR, 'db.sqlite3') for the default path
+    # }
 }
 
 # Password validation
@@ -135,10 +135,10 @@ STATICFILES_DIRS = [
 ]
 
 # deployment additions
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -183,7 +183,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 ACCOUNT_EMAIL_REQUIRED = True
 LOGIN_REDIRECT_URL = "/"
-ACCOUNT_EMAIL_VERIFICATION = 'none' # deployment changes
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # deployment changes
 ACCOUNT_CHANGE_EMAIL = True
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
