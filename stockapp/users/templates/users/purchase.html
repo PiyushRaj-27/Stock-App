@@ -39,9 +39,16 @@
 
                     </div>
 
-                    <a class="productLink" href="https://wingnate.gumroad.com/l/ymdamg"><div class="purchase">Purchase</div></a>
-                </div>
+
+                    <form action="{% url 'phonepe_payment' %}" method="post" class="payment_form">
+                        {% csrf_token %}
+                        <input hidden value="1" name="itemId">
+                        <button class="purchase">Purchase
+                </div></a>
+                </form>
+                <!-- <a class="productLink" href="https://wingnate.gumroad.com/l/ymdamg"><div class="purchase">Purchase</div></a> -->
             </div>
+
 
             <div class="price-card-wrapper gradient2">
                 <div class="price-card gradient-card-2">
@@ -69,44 +76,57 @@
                         </ul>
                     </div>
 
-                    <a class="productLink" href="https://wingnate.gumroad.com/l/hydcnk" ><div class="purchase">Purchase</div></a>
-                </div>
+                    <!-- <a class="productLink" href="https://wingnate.gumroad.com/l/hydcnk" ><div class="purchase">Purchase</div></a> -->
+
+                    <form action="{% url 'phonepe_payment' %}" method="post" class="payment_form">
+                        {% csrf_token %}
+                        <input hidden value="2" name="itemId">
+                        <button class="purchase">Purchase
+                </div></a>
+                </form>
             </div>
+        
 
 
-            <div class="price-card-wrapper gradient3">
-                <div class="price-card gradient-card-3">
-                    <div class="price-info">
-                        <div class="price-name">
-                            Pro
-                        </div>
+        <div class="price-card-wrapper gradient3">
+            <div class="price-card gradient-card-3">
+                <div class="price-info">
+                    <div class="price-name">
+                        Pro
                     </div>
+                </div>
 
-                    <div class="price">₹ 199</div>
-                    <hr width="110%" style="background: rgb(74, 74, 74);">
-                    <div class="feature"> Features </div>
-                    <div class="details">
-                        <ul>
-                            <li>
-                                A Perfect Plan For Hassle Free Predictions
-                            </li>
+                <div class="price">₹ 199</div>
+                <hr width="110%" style="background: rgb(74, 74, 74);">
+                <div class="feature"> Features </div>
+                <div class="details">
+                    <ul>
+                        <li>
+                            A Perfect Plan For Hassle Free Predictions
+                        </li>
 
-                            <li>
-                                11 Credits Points
-                            </li>
+                        <li>
+                            11 Credits Points
+                        </li>
 
-                            <!-- <li>
+                        <!-- <li>
                             2 Free use
                         </li> -->
-                        </ul>
-                    </div>
-
-                    <a href="https://wingnate.gumroad.com/l/dcmeg" class="productLink"><div class="purchase">Purchase</div></a>
+                    </ul>
                 </div>
-            </div>
 
-        </div>
+                <!-- <a href="https://wingnate.gumroad.com/l/dcmeg" class="productLink"><div class="purchase">Purchase</div></a> -->
+                <form action="{% url 'phonepe_payment' %}" method="post" class="payment_form">
+                    {% csrf_token %}
+                    <input hidden value="3" name="itemId">
+                    <button class="purchase">Purchase
+            </div></a>
+            </form>
+        
     </div>
+
+</div>
+</div>
 </div>
 
 {% endblock %}

@@ -4,26 +4,28 @@ Utility Functions for normal API working
 import re 
 import os
 import json
+import time
 import logging
 from io import StringIO
-import openai
+
+import requests
 from openai import OpenAI
 import yfinance as yf
 import pandas as pd
 from pandas import DataFrame
+from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from yfinance.exceptions import YFException
 from celery import shared_task
 from users.models import Customers
 
-
 # OPENAI SPECIFIC CONFIGURATION
 client = OpenAI(
     api_key=os.getenv("OPENAI_KEY"),
 )
 
-# DO NOT TOUCH POSITIVELY, CONTAIN THE FILE IF OF UPLOADED FILES
+# DO NOT TOUCH POSITIVELY, CONTAIN THE FILE ID OF UPLOADED FILES
 FILEIDS = {"stock_knowledge": "file-QkUr6JFJf7nq2Uw9uLXGur"}
 
 
@@ -32,6 +34,11 @@ logger = logging.getLogger(__name__)
 HISTORY_TIMEOUT = 300000
 INFO_TIMEOUT = 300000
 PREDICTION_TIMEOUT = 14400
+
+
+#PHONEPAY RELATED SETTINGS. DO NOT TOUCH POSITIVELY
+PHONEPE_GRANT_TYPE = 'client_credentials'
+PHONEPE_AUTH_URL = settings.PHONEPE_API_URL + "/v1/oauth/token"
 
 def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
                 historyOnly: bool = False, informationOnly: bool = False) -> dict:
@@ -71,7 +78,7 @@ def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
         logger.error("Redis took too long to response: %s", e)
 
     except Exception as e:
-        logger.error("Cache get failed with exception: %s. Fallback to live", e)
+        logger.error("Cache get failed with exception. Fallback to live: %s", e)
 
     if (history is None or history.empty) and not informationOnly:
         logger.warning("Fetching live data for stock %s", stock)
@@ -361,7 +368,7 @@ def call_openai_prediction(prompt: str, model:str = "gpt-4o") -> dict:
         )
 
         result["response"] = response.output_text
-        logger.info("LLM generated Response: %s", result["response"]);
+        logger.info("LLM generated Response: %s", result["response"])
     except Exception as e:
         logger.warning("ChatGPT API error: %s" , e)
         result["error"] = True
@@ -545,3 +552,106 @@ def make_prediction(stock: str, email):
     return {"result": "" , "success": False, "message": "Unauthorized user"}
 
 # TODO: create a utility function to fetch data for a number of stocks and send them via SSE
+
+
+
+def get_phonepay_token():
+    """
+    Fetches auth token for payment initiation from phonepay
+
+    returns:
+        auth_token
+    
+    raises:
+        Exception
+    """
+
+    cache_key = "phonepay_auth_token"
+    data = cache.get(cache_key)
+
+    if data is not None:
+        logger.info("auth_key fetched from cache")
+        return data
+
+    logger.warning("phonepe_auth token fetch failed from cache. Refreshing token!")
+    auth_payload = {
+            'client_id': os.getenv("PHONEPAY_CLIENT_ID"),
+            'client_secret': os.getenv("PHONEPAY_CLIENT_SECRET"),
+            'grant_type': PHONEPE_GRANT_TYPE,
+            'client_version': os.getenv("PHONEPAY_CLIENT_VER")
+        }
+    auth_headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    try:
+
+        auth_response = requests.post(
+            url=PHONEPE_AUTH_URL,
+            data=auth_payload,
+            headers=auth_headers,
+            timeout= 100
+        )
+
+        auth_response.raise_for_status() # Raise an exception for bad status codes
+        auth_data = auth_response.json()
+        access_token = auth_data.get('access_token')
+        issued_at = auth_data.get("issued_at")
+        expires_at = auth_data.get("expires_at")
+
+        if not access_token:
+            raise Exception("Invalid response from auth server")
+
+        cache.set(cache_key, access_token, expires_at - issued_at - 30) # early expire the token
+
+        return access_token
+    except Exception as e:
+        logger.error("Access_token fetch failed with error %s", e)
+        raise
+
+
+def phonepe_check_order_status(merchantOrderId):
+    """
+    Implements phonepe order status API
+    """
+    url = settings.PHONEPE_API_URL + f"/checkout/v2/order/{merchantOrderId}/status"
+
+    try:
+        auth_token = get_phonepay_token()
+        status_header = {
+            "Content-Type": "application/json",
+            "Authorization" : f"O-Bearer {auth_token}"
+        }
+
+        status_response = requests.get(
+            url= url,
+            headers=status_header,
+            timeout=100
+        )
+        status_response.raise_for_status()
+        status_data = status_response.json()
+        success = status_data.get("success", True)
+        if not success:
+            logger.error("Invalid Merchant id %s", str(merchantOrderId))
+            return "ERROR"
+
+        status = status_data.get("state")
+        return status
+
+    except Exception as e:
+        logger.error("Fetching order status for order id %s failed with error %s", str(merchantOrderId), e)
+        return "ERROR"
+
+@shared_task
+def phonepe_order_check_celery(merchantOrderId):
+    """
+    Celery wrapper for phonepe order status api
+    """
+    state = phonepe_check_order_status(merchantOrderId)
+    retry_count = 0
+    while state == "PENDING" and retry_count < 10:
+        time.sleep(2)
+        retry_count += 1
+        state = phonepe_check_order_status(merchantOrderId=merchantOrderId)
+
+    return state

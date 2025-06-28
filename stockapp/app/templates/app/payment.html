@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Checking Payment Status{% endblock %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/payment.css' %}">
+<title>Checking Payment Status</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="status_container">
+        <p id="message">Checking Payment Status!</p>
+        <p id="payment">
+            <div id="loader" class="loader"></div>
+        <div id="success" class="pay payment_success" hidden>SUCCESS!</div>
+        <div id="failed" class="pay payment_failed" hidden>FAILED!</div>
+        <div id="error" class="pay payment_error" hidden>ERROR!</div>
+        </p>
+        <div id="redirectMessage">
+            <p id="wait" class="msg">Please wait upto a minute! Don't press back.</p>
+            <p id="failed_msg" class="msg" hidden>In case of failed transaction! Please wait for few minutes if money is deducted and contact us if the
+                problem persists.</p>
+            <p id="error_msg" class="msg" hidden>In case of error in transaction! Please Log in again and check the purchase section. If money was
+                deducted from bank and it does not reflect in purchase tab, please contact us!</p>
+            <p id="redirect_msg" class="msg" hidden>Redirecting to home page in 10 seconds!</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.addEventListener("load", () => {
+        console.log("Window loaded")
+        let taskId = "{{task_id}}";
+
+        // initiate payment in IFRAME mode!
+
+
+        async function pollResult(taskId, callback) {
+
+            try {
+                let call_count = 0;
+                const response = await fetch(`/app/infer?task_id=${taskId}`);
+                const data = await response.json();
+
+                if (data.status === 'SUCCESS') {
+                    // console.log(data.result);
+                    callback(data.result);
+                    return;
+                }
+
+                else if (data.status === "FAILURE") {
+                    console.error(`Failed to poll results for task id: ${taskId}`);
+                    return;
+                }
+
+                const interval = setInterval(async () => {
+                    call_count += 1;
+                    if (call_count > 5) {
+                        console.log("Cannot connect to server");
+                        clearInterval(interval);
+                    }
+                    const response = await fetch(`/app/infer?task_id=${taskId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'SUCCESS') {
+                        clearInterval(interval);
+                        // console.log(data.result);
+                        callback(data.result);
+                    }
+                }, 2000); // poll every 1 second
+            }
+
+            catch (error) {
+                console.log(`Error in function: pollResult: ${error}`);
+                document.getElementById("error").style.display = "block";
+                document.getElementById("error_msg").style.display = "block";
+                setTimeout(() => {
+                    window.location.href = "/purchase";
+                }, 5000)
+            }
+
+
+        }
+
+        function getStatus(data) {
+            console.log(data);
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("redirect_msg").style.display = "block"
+            switch (data) {
+                case "COMPLETED":
+                    document.getElementById("success").style.display = "block";
+
+                    break;
+                
+                case "FAILED":
+                    
+                    document.getElementById("failed").style.display = "block";
+                    document.getElementById("failed_msg").style.display = "block";
+                    break;
+                
+                case "ERROR":
+                    document.getElementById("error").style.display = "block";
+                    document.getElementById("error_msg").style.display = "block";
+                    break;
+            
+                default:
+                    break;
+            }
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 10000)
+        }
+
+
+        pollResult(taskId, getStatus);
+    });
+
+</script>
+
+{% endblock %}

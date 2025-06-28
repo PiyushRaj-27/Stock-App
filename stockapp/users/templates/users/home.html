@@ -3,18 +3,91 @@
 {% block title %}Home{% endblock %}
 
 {% block extrahead %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/css/home.css' %}">
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/home.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class ="content">
-        <div class="centre">
-            <div class="major">All thing fianance, right here. </div>
-            <div class="minor">Built for making impact</div>
-            <a href="{% url 'account_signup' %}"><div class="started">Get Started</div></a>
-        </div>
+<div class="content">
+    <div class="centre">
+        <div class="major">All thing fianance, right here. </div>
+
+        <!-- change this to minor  -->
+        <div class="minor">Built for making impact</div>
+        <a href="{% url 'account_signup' %}">
+            <div class="started">Get Started</div>
+        </a>
     </div>
+</div>
+<div class="content">
+    <div class="centre w90">
+        <div class="cardCollector">
+            <div class="Imagecard">
+                <img src="{% static 'images/People1.png' %}" height="300px">
+                <div class="infocard">
+                    <div class="infotitle text-left bebas-neue-regular">
+                        What are we?
+                    </div>
+                    <div class="infotext">
+                        We are an AI-driven analytics platform dedicated to the democratization of machine learning. Our
+                        mission is to make complex analytical models and deep learning frameworks accessible to
+                        everyone; students, researchers, analysts, and data enthusiasts; who want to explore patterns in
+                        open-source datasets. We are committed to responsible, educational AI innovation that empowers
+                        users to draw insights and predictions from real-world public data without needing a background
+                        in data science.
+                        <br><br>
+                        We do not engage in or facilitate any form of trading, investment advice, or financial
+                        recommendations. All content is purely educational and based on publicly available datasets used
+                        for model experimentation and academic research.
+
+                    </div>
+                </div>
+            </div>
+            
+            <div class="Imagecard">
+                <img src="{% static 'images/mind1.png' %}" height="150px">
+                <div class="infocard text-right">
+                <div class="infotitle bebas-neue-regular">
+                    What is Machine Learning & Its Benefits?
+
+                </div>
+                <div class="infotext">
+                    Machine Learning (ML) has revolutionized the way we process and interpret large datasets. It allows
+                    for pattern recognition, forecasting, and real-time anomaly detection across domains like
+                    healthcare, climate science, traffic analysis, and public sentiment. When applied responsibly, ML
+                    enables:
+                    <br><br>
+                    🟣 Forecasting trends from historic patterns
+                    <br><br> 🟣 Sentiment mining from large volumes of user-generated content
+                    <br><br> 🟣 Visualizing complex relationships in data
+                    <br><br> 🟣 Categorizing datasets automatically based on hidden features
+
+                </div>
+            </div>
+            </div>
+            
+            <div class="infocard text-left">
+                <div class="infotitle bebas-neue-regular">
+                    Tools We Use
+                </div>
+                <div class="infotext">
+                    Our models are completely built in-house using open-source tools and frameworks. We currently use:
+
+                    <br><br> 🟣 Custom-Built LLM (Large Language Model) for contextual understanding and intelligent
+                    summarization
+                    <br><br> 🟣 BiLSTM (Bidirectional LSTM) for sequence-based forecasting and predictive analytics
+                    <br><br> 🟣 Advanced Sentiment Analysis Module to derive emotional trends from unstructured data
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+    </div>
+</div>
 
 
 {% endblock %}

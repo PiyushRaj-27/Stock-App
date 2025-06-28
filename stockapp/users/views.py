@@ -61,7 +61,7 @@ def update_profile(request):
         try:
             userModel = Customers.objects.get(user = request.user)
             isCustomer = True
-        except Exception as e:
+        except Exception:
             pass
         print(f"Got reuqest: {gender}")
         if isCustomer:
@@ -92,8 +92,8 @@ def privacy_policy(request):
     To handle privacy policy page.
     """
 
-    return render(request, "users/privacy_policy.html", { "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
-                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+    return render(request, "users/privacy_policy.html", { "application_name": "DBLACS AI", "company_name": "DBLACS AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "03 business days"
                                                })
 
 def terms_of_service(request):
@@ -101,8 +101,8 @@ def terms_of_service(request):
     To handle terms of service page.
     """
 
-    return render(request, 'users/tos.html', { "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
-                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+    return render(request, 'users/tos.html', { "application_name": "DBLACS AI", "company_name": "DBLACS AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "03 business days"
                                                })
 
 def refund_policy(request):
@@ -110,8 +110,8 @@ def refund_policy(request):
     To handle refund Policy page.
     """
 
-    return render(request, 'users/refund.html', { "effective_date": "May 2025", "allow_days": "7", "application_name": "Celestiya", "company_name": "Blackjak AI", "minimum_age": "18", 
-                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "3"
+    return render(request, 'users/refund.html', { "effective_date": "May 2025", "allow_days": "7", "application_name": "DBLACS AI", "company_name": "DBLACS AI", "minimum_age": "18", 
+                                              "x": "6", "country": "India", "email": "n8wing.017@gmail.com", "support_days": "03 business days", "refund_duration": "07 business days"
                                                })
 
 @csrf_exempt
@@ -127,7 +127,7 @@ def gumroad_ping(request):
 
             # custom field contain the real user EMAIL ID
             # real lable: Email ID (Enter the same Email ID with which you have registered on BlacJak)
-            custom_fields = json.loads(data.get('custom_fields', '{}'))
+            custom_fields = json.loads(data.get('Email ID (Enter the same Email ID with which you have registered on BlacJak)', '{}'))
             custom_email = custom_fields.get('Email ID', "")
 
 
@@ -136,7 +136,7 @@ def gumroad_ping(request):
                 customer = Customers.objects.get(user=user)
 
 
-            except (ObjectDoesNotExist):
+            except ObjectDoesNotExist:
                 customer = None
             # first create a purchase reacord. Very important incase if user accidently fumbled and did not provide correct email and stuff
             purchase = Purchase.objects.create(
@@ -172,3 +172,67 @@ def gumroad_ping(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
     return JsonResponse({'status': 'invalid method'}, status=405)
+
+
+'''
+
+ if request.method == 'POST':
+        try:
+            data = request.POST
+            # custom field contain the real user EMAIL ID
+            # real lable: Email ID (Enter the same Email ID with which you have registered on BlacJak)
+            custom_email = data.get('Email ID (Enter the same Email ID with which you have registered on BlacJak)', '')
+
+            try:
+                user = User.objects.get(email=custom_email)
+                #user = User.objects.get(email='purplewings.n811@gmail.com')
+                customer = Customers.objects.get(user=user)
+
+
+            except (ObjectDoesNotExist):
+                customer = None
+            # first create a purchase reacord. Very important incase if user accidently fumbled and did not provide correct email and stuff
+            purchase = Purchase.objects.create(
+                customer=customer,
+                sale_id=data.get('sale_id'),
+                sale_timestamp=datetime.fromisoformat(data.get('sale_timestamp')),
+                order_number=data.get('order_number'),
+                product_id=data.get('product_id'),
+                product_permalink=data.get('product_permalink'),
+                short_product_id=data.get('short_product_id'),
+                product_name=data.get('product_name'),
+                full_name=data.get('full_name', ''),
+                price_cents=int(data.get('price', 0)),
+                quantity=int(data.get('quantity', 1)),
+                ip_country=data.get('ip_country', ''),
+                affiliate_email=data.get('affiliate', ''),
+                refunded=data.get('refunded', 'false') == 'true',
+                custom_email_id=custom_email
+            )
+            purchase.save()
+
+
+            if not custom_email or custom_email == "":
+                return JsonResponse({'status': 'error', 'message': 'Custom Email ID not provided'}, status=400)
+
+            product_name = data.get('product_name', '').strip().lower()
+            if product_name.strip().lower() == "blacjak - 99" and customer:
+                customer.credit += 2 * int(data.get('quantity', 1))
+                customer.save()
+            elif product_name.strip().lower() == "blacjak - 149" and customer:
+                customer.credit += 7 * int(data.get('quantity', 1))
+                customer.save()
+            elif product_name.strip().lower() == "blacjak - 199" and customer:
+                customer.credit += 199 * int(data.get('quantity',1))
+                customer.save()
+
+            return JsonResponse({'status': 'success'},status=200)
+
+        except Exception as e:
+            print(f"ERROR: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'invalid method'}, status=405)
+
+
+'''

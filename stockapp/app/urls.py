@@ -18,7 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import (dashboard, search,
                      stock_dashboard,
-                    get_task_result, trigger_top_india_stock_task, trigger_get_hourly_task, trigger_get_prediction_task)
+                    get_task_result, trigger_top_india_stock_task, trigger_get_hourly_task, trigger_get_prediction_task,
+                    phonepe_payment_callback, initiate_phonepay_payment, phonepe_redirect_callback, user_purchase_history
+                    )
 urlpatterns = [
     path('dashboard/', dashboard, name="dashboard"),
     path('search/', search, name="search"),
@@ -26,5 +28,9 @@ urlpatterns = [
     path('infer/', get_task_result, name = "infer"),
     path('stock/<str:stockname>', stock_dashboard, name="stock"),
     path("stock/hourly/<str:stockname>", trigger_get_hourly_task, name="hourly"),
-    path('stock/prediction/<str:stockname>', trigger_get_prediction_task, name="prediction")
+    path('stock/prediction/<str:stockname>', trigger_get_prediction_task, name="prediction"),
+    path('phonepay_3223/callback', phonepe_payment_callback, name="phonepay_callback"),
+    path('payment/phonepe', initiate_phonepay_payment, name="phonepe_payment"),
+    path('phonepe/redirect', phonepe_redirect_callback, name="phonepe_redirect_callback"),
+    path('purchase_history', user_purchase_history, name="purchase_history")
 ]

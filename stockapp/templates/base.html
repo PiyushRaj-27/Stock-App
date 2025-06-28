@@ -12,13 +12,21 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <title>{% block title %} {% endblock %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
     {% block extrahead %} {% endblock %}
 </head>
 
 <body>
     <!-- our header -->
     <div class="header">
-        <div class="title" id="title"> BlacJak</div>
+
+        <!-- change here   -->
+
+        <div class="title" id="title"> <div class="title-major">DBLACS</div> <div class="title-minor">Deep Based Learning and Analysis of Crowd Signals</div></div>
 
 
         {% if user.is_authenticated %}
@@ -44,6 +52,15 @@
                         </a>
                     </div>
                 </div>
+
+                <div class="dropdown-item">
+                    <div class="dropdown-text">
+                        <a href="{% url 'purchase_history'%}" style="color: white; font-size: 15px; justify-content: start;">
+                            Purchase History
+                        </a>
+                    </div>
+                </div>
+
                 <div class="dropdown-item">
                     <form method="post" action="{% url 'account_logout' %}" style="    
     /* padding: 10px; */
@@ -91,10 +108,16 @@
                 <div class="signupMessage">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a>
                 </div>
             </div>
-            <!-- <form method="post" action="{% provider_login_url "google" %}" class="google-login">
+            <form method="post" action="{% provider_login_url "google" %}" class="google-login">
                 {% csrf_token %}
                 <button type="submit" class="signInWithGoogle">Sign in with Google</button>
-            </form> -->
+            </form>
+
+            <!-- <script src="//accounts.google.com/gsi/client" async></script>
+<div id="g_id_onload"
+     data-client_id="123-secret.apps.googleusercontent.com"
+     data-login_uri="{% url 'google_login_by_token' %}">
+</div> -->
         </div>
     </div>
 

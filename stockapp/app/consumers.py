@@ -66,8 +66,6 @@ class StockConsumer(AsyncWebsocketConsumer):
             task = global_tasks.pop(self.group_name, None)
             if task:
                 task.cancel()
-        
-
 
     async def send_updates(self):
         """

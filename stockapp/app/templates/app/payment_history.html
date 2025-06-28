@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Purchase History{% endblock %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/payment_history.css' %}">
+<title>Purchase History</title>
+{% endblock %}
+
+{% block content %}
+    <!-- purchase_history -->
+    <div class="container">
+        <div class="history_container">
+            <div class="history_title">Your Purchases</div>
+            <div class="history_table">
+                <div class="purchase">
+                    <div class="purchase_basic table_header">
+                        <div class="time_amt">
+                            <div class="time">
+                                Date & Time
+                            </div>
+                            <div class="amount">Amount</div>
+                            
+                        </div>
+                        <div class="purchase_id">
+                            Order ID
+                        </div>
+                        <div class="status">Status</div>
+                    </div>
+                </div>
+
+                {% for p in purchase_history %}
+                <div class="purchase">
+                    <div class="purchase_basic">
+                        <div class="time_amt">
+                            {# Format the date nicely #}
+                            <div class="time">{{ p.0|date:"F j, Y, P" }}</div>
+                            {# Format the amount with currency #}
+                            <div class="amount">₹{{ p.1|floatformat:2 }}</div>
+                        </div>
+                        <div class="purchase_id">
+                            {{ p.3 }}
+                        </div>
+                        {# Simplified status logic using a single class #}
+                        <div class="status {{ p.4|lower }}">{{ p.4 }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+
+                
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+
+window.addEventListener("load", ()=> {
+    const purchaseContainer = document.getElementById('history_table');
+        
+        if (purchaseContainer) {
+            purchaseContainer.addEventListener('click', function(event) {
+                // Find the '.purchase_basic' header that was clicked, if any
+                const header = event.target.closest('.purchase_basic');
+                
+                // If the click was not on a header, do nothing
+                if (!header) {
+                    return;
+                }
+                
+                // Find the parent '.purchase' element for the clicked header
+                const purchaseElement = header.closest('.purchase');
+                
+                // Toggle the 'open' class on the parent element
+                // This will trigger the CSS transition
+                if (purchaseElement) {
+                    purchaseElement.classList.toggle('open');
+                }
+            });
+        }
+})
+        
+    </script>
+{% endblock %}
