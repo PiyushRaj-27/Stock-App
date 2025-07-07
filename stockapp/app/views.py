@@ -330,8 +330,8 @@ def initiate_phonepay_payment(request):
             # Redirect the user to the PhonePe payment page
             # This is the "Redirect Mode" from the documentation.
             # We don't need the checkout.js for this simple mode.
-            return HttpResponseRedirect(redirect_url)
-            # return render(request, "app/payment.html", context= {"redirect_url": redirect_url, "merchantOrderId":merchant_order_id})
+            # return HttpResponseRedirect(redirect_url)
+            return render(request, "app/payment.html", context= {"redirect_url": redirect_url, "merchantOrderId":merchant_order_id})
         except Exception as e:
             logger.error("Payment initiation failed %s",e)
             order.status = 'FAILED'

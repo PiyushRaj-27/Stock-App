@@ -354,13 +354,20 @@ def call_openai_prediction(prompt: str, model:str = "gpt-4o") -> dict:
 
                     -Be precise and provide a tight range.
 
-                    -Output format: 
-                    High: (price)
-                    Low: (price)
-                    Sentiment : positive/ negative
-                    Closing range: lowerBound-UpperBound
+                    -Strictly follow the following output format
 
-                    -Only give output in the given format with no further explanations and texts
+                    -Only give output in the given Json format with no further explanations and texts
+                    
+                    -Output format:
+                    {
+                        High: <price>
+                        Low: <price>
+                        Sentiment : <positive/ negative>
+                        Closing range: <lowerBound-UpperBound>
+                    } 
+                    
+
+                    
 
                     -If you fail to give predictions, just give <no data available> as output, in that case            
             """,
@@ -436,52 +443,71 @@ def construct_prediction_prompt(stock_name: str, closing_prices: list, news_text
 
 def parse_llm_response(response: str) -> dict:
     """
-    Parses the response coming from the llm.
+    Parses the response coming from the LLM.
+
+    Supports both:
+    - Line-based key-value format
+    - JSON output (with or without markdown code block)
 
     Parameters:
-        response: The response recieved from the llm
+        response: The response received from the LLM
 
     Returns:
-        dict: Dictionary containing various attributes coming from the llm
+        dict: Dictionary containing parsed output
     """
-
     expected_keys = ['High', 'Low', 'Sentiment', 'Closing range']
-    result = {}
 
-    lines = response.strip().split('\n')
+    # --- JSON handling ---
+    raw = response.strip()
 
-    if len(lines) != 4:
-        raise ValueError("Invalid format: Exactly 4 lines required.")
+    if raw.startswith("```"):
+        # Strip triple backticks and optional language (e.g., ```json)
+        raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.IGNORECASE)
 
-    for i, expected_key in enumerate(expected_keys):
-        line = lines[i]
+    try:
+        parsed = json.loads(raw)
 
-        # Ensure there's exactly one colon
-        if line.count(':') != 1:
-            raise ValueError(f"Line {i+1} must contain exactly one colon: '{line}'")
+        # Validate presence of all keys
+        if not all(key in parsed for key in expected_keys):
+            raise ValueError("Missing keys in JSON format.")
 
-        key, value = map(str.strip, line.split(':'))
+        return {
+            "high": float(parsed["High"]),
+            "low": float(parsed["Low"]),
+            "sentiment": parsed["Sentiment"],
+            "closingRange": {
+                "start": float(parsed["Closing range"].split("-")[0].strip()),
+                "end": float(parsed["Closing range"].split("-")[1].strip())
+            }
+        }
 
-        if key != expected_key:
-            raise ValueError(f"Expected key '{expected_key}', but found '{key}'")
+    except json.JSONDecodeError:
+        # --- Fallback to 4-line key-value format ---
+        lines = raw.split('\n')
+        if len(lines) != 4:
+            raise ValueError("Invalid format: Expected 4 lines.")
 
-        if key in ['High', 'Low']:
+        result = {}
+        for i, expected_key in enumerate(expected_keys):
+            line = lines[i]
 
-            result[key.lower()] = float(value)
+            if line.count(':') != 1:
+                raise ValueError(f"Line {i+1} must contain exactly one colon: '{line}'")
 
-        elif key == 'Sentiment':
-            if not value:
-                raise ValueError("Sentiment value cannot be empty.")
-            result['sentiment'] = value
-        elif key == 'Closing range':
-            if value.count('-') != 1:
-                raise ValueError("Closing Range must contain exactly one hyphen.")
-            start_str, end_str = map(str.strip, value.split('-'))
-            start = float(start_str)
-            end = float(end_str)
-            result['closingRange'] = {'start': start, 'end': end}
+            key, value = map(str.strip, line.split(':'))
 
-    return result
+            if key != expected_key:
+                raise ValueError(f"Expected key '{expected_key}', but found '{key}'")
+
+            if key in ['High', 'Low']:
+                result[key.lower()] = float(value)
+            elif key == 'Sentiment':
+                result['sentiment'] = value
+            elif key == 'Closing range':
+                start, end = map(lambda x: float(x.strip()), value.split('-'))
+                result['closingRange'] = {'start': start, 'end': end}
+
+        return result
 
 
 @shared_task
@@ -537,6 +563,7 @@ def make_prediction(stock: str, email):
         # TODO: check the formate of the response before deducting the credit points, otherwise on frontend things would go wavy....
 
         try:
+            print(f"openai said: {result}")
             parsedResponse = parse_llm_response(result.get("response",""))
 
         except ValueError as e:
