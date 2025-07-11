@@ -92,6 +92,7 @@
 
 .section {
     color: var(--bgtext);
+    border: 0.5px solid rgb(74, 74, 74);
 }
 a{
     position: relative;
@@ -127,7 +128,7 @@ a{
         align-items: center;
         justify-content: start;
         gap: 1rem;
-        padding-top: 100px;
+        /* padding-top: 100px; */
     }
 
     .circle{

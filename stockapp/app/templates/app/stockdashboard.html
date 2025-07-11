@@ -33,6 +33,7 @@
                 <div class="numerics">
                     <div class="numeric" id="price-{{stock_name}}-close">
                         <!-- 22,904.45 <div class="high-price">-345.65</div> -->
+                         <!-- <div class="loader-wrapper" id="loader-2" style="width: 100%; display: flex; align-items: center; justify-content: center;"> <div class="loader" style="margin-top: 0rem;width: 30px; padding: 5px;"></div></div> -->
                     </div>
                     <div class="numeric-dull">Current Price</div>
                 </div>
@@ -40,6 +41,8 @@
             </div>
             <hr class="hrrule">
             <div class="stockcarddata">
+                <div class="loader-wrapper" id="loader-1" style="width: 100%; display: flex; align-items: center; justify-content: center;"> <div class="loader"></div></div>
+                
                 <canvas id="chart-{{ stock_name }}"></canvas>
             </div>
 
@@ -47,10 +50,10 @@
 
         <div class="datacard-wrapper">
             <div class="datacard" id="datacard">
-
             </div>
 
-            <div class="predict-btn" onclick="getPrediction()">Predict</div>
+            <div class="predict-btn" onclick="getPrediction()" id="predict-btn">Predict</div>
+            <div class="loader" id="loader-4" style="display: none; align-items: center; justify-content: center; margin-top: 10px;" hidden></div>
         </div>
         
     </div>

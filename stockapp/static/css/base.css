@@ -254,6 +254,10 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .footer-content a {
@@ -471,9 +475,7 @@ a{
         width: 90%;
     }
 
-    .dropdown-content{
-        width: 50vw;
-    }
+    
 
     .logout-btn{
         width: 100%;
@@ -491,7 +493,14 @@ a{
 
     .footer-nav{
         font-size: 11px;
+        width: 100%;
     }
 
 }
 
+
+@media screen and (max-width: 1200px) {
+    .dropdown-content{
+        width: 30vw;
+    }
+}

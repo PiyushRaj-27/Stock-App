@@ -104,7 +104,7 @@
     max-height: auto;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1500px) {
 .container{
     padding-left: 0px;
     padding-right: 0px;

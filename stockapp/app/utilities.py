@@ -31,14 +31,19 @@ FILEIDS = {"stock_knowledge": "file-QkUr6JFJf7nq2Uw9uLXGur"}
 
 logger = logging.getLogger(__name__)
 
-HISTORY_TIMEOUT = 300000
-INFO_TIMEOUT = 300000
-PREDICTION_TIMEOUT = 14400
+# HISTORY_TIMEOUT = 300000
+# INFO_TIMEOUT = 300000
+# PREDICTION_TIMEOUT = 14400
 
+HISTORY_TIMEOUT = 900
+INFO_TIMEOUT = 900
+PREDICTION_TIMEOUT = 64800
 
 #PHONEPAY RELATED SETTINGS. DO NOT TOUCH POSITIVELY
 PHONEPE_GRANT_TYPE = 'client_credentials'
-PHONEPE_AUTH_URL = settings.PHONEPE_API_URL + "/v1/oauth/token"
+# PHONEPE_AUTH_URL = settings.PHONEPE_API_URL + "/v1/oauth/token"
+PHONEPE_AUTH_URL = 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token'
+
 
 def get_stock_data(stock: str, period:str = "1d", interval:str = "15m",
                 historyOnly: bool = False, informationOnly: bool = False) -> dict:
@@ -358,12 +363,15 @@ def call_openai_prediction(prompt: str, model:str = "gpt-4o") -> dict:
 
                     -Only give output in the given Json format with no further explanations and texts
                     
+                    -Give one line reason for the prediction:
+
                     -Output format:
                     {
                         High: <price>
                         Low: <price>
                         Sentiment : <positive/ negative>
                         Closing range: <lowerBound-UpperBound>
+                        Reason: <reason>
                     } 
                     
 
@@ -455,7 +463,7 @@ def parse_llm_response(response: str) -> dict:
     Returns:
         dict: Dictionary containing parsed output
     """
-    expected_keys = ['High', 'Low', 'Sentiment', 'Closing range']
+    expected_keys = ['High', 'Low', 'Sentiment', 'Closing range', 'Reason']
 
     # --- JSON handling ---
     raw = response.strip()
@@ -478,7 +486,8 @@ def parse_llm_response(response: str) -> dict:
             "closingRange": {
                 "start": float(parsed["Closing range"].split("-")[0].strip()),
                 "end": float(parsed["Closing range"].split("-")[1].strip())
-            }
+            },
+            "reason": parsed["Reason"]
         }
 
     except json.JSONDecodeError:
@@ -506,7 +515,8 @@ def parse_llm_response(response: str) -> dict:
             elif key == 'Closing range':
                 start, end = map(lambda x: float(x.strip()), value.split('-'))
                 result['closingRange'] = {'start': start, 'end': end}
-
+            elif key == "Reason":
+                result['reason'] = value
         return result
 
 

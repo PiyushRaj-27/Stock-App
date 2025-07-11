@@ -82,6 +82,11 @@ async function pollResult(taskId, callback) {
 async function get_hourly_stock_data() {
     const task_id = await get_hourly_stocks_task_id();
     await pollResult(task_id, (response) => {
+        // hide loeader
+        document.getElementById("loader-1").style.display = "none";
+        // document.getElementById("loader-2").style.display = "none";
+        // document.getElementById("loader-3").style.display = "none";
+
         stockData = response;
         appendPrices(stockData.data, stockData.metadata.currency, stockData.metadata.volume);
         renderStockGraph(response.data, stockName);
@@ -559,6 +564,10 @@ function addPredictionToDataCard(data){
         dataVal.classList.add("data-value");
         dataVal.classList.add(`data-val-${key}`);
 
+        if(key === "reason"){
+            dataItem.style.width = "100%";
+            dataVal.style.textAlign = "center";
+        }
         dataKey.innerHTML = "Predicted " + key;
         if(key === "closingRange"){
 
@@ -589,34 +598,49 @@ function addPredictionToDataCard(data){
 
 async function getPrediction() {
     let token;
+    let btn = document.getElementById("predict-btn");
+    let loader = document.getElementById("loader-4");
     try {
         token = await getPredictionToken();
     } catch (error) {
         console.error("Error occurred while getting prediction token:", error);
+        showError("Error occurred while getting prediction token:");
         return;
     }
 
 
     if (token) {
+        // console.log(btn);
+        btn.style.display = "none";
+        loader.style.display="flex";
         await pollResult(token,
             (response) => { // Success Callback for pollResult
-                console.log(response);
+                // console.log(response);
                 try {
                     if("success" in response && !response["success"]){
                         showError(response.message);
+                        btn.style.display = "block";
+                        loader.style.display = "none";
                     }
                     else{
                         const res = response["result"];
                         // const parsedData = parseStockData(res);
-                        console.log(res);
+                        // console.log(res);
+                        loader.style.display = "none";
                         addPredictionToChart(res);
                         addPredictionToDataCard(res);
                     }
                 } catch (error) {
                     console.error("Error occurred inside getPrediction:", error);
+                    btn.style.display = "block";
+                    loader.style.display = "none";
+
                 }
             },
             (error) => {
+                btn.style.display = "block";
+                loader.style.display = "none";
+
                 console.error("Polling failed for prediction task:", error);
             }
         );
